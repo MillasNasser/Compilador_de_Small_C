@@ -14,4 +14,5 @@ Pilha* new_pilha(){
     nova->add = plh_add;
     nova->pop = plh_pop;
     ((Lista*)nova)->type = "Pilha";
+    return nova;
 }

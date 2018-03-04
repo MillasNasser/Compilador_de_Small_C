@@ -32,15 +32,17 @@ bool io_rewind(IO *this){
 }
 
 /** ------------- Construtores e Destrutores -----------**/
-IO* new_IO(){
+IO* new_IO(string path){
     IO *new = calloc(1,sizeof(IO));
     new->openFile = io_openFile;
     new->closeFile = io_closeFile;
     new->getNextChar = io_getNextChar;
     new->rewind = io_rewind;
+    new->openFile(new,path);
     return new;
 }
 
 void del_IO(IO *io){
+    fclose(io->sourceCode);
     free(io);
 }

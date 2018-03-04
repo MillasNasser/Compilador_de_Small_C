@@ -9,7 +9,7 @@
 		bool (*rewind)(struct s_IO *self);
 	} IO;
 
-	IO* new_IO();
+	IO* new_IO(string path);
 	
 	void del_IO(IO*);
 #endif //__IO_H

@@ -3,15 +3,21 @@
 	#include "HeaderPadrao.h"
 	#include "IO.h"
 	#include "lista.h"
+	#include "Token.h"
 
     typedef struct s_AnalsdrLex{
         IO *io;
-		bool (*addWL)(string lexema, string token);
-		bool (*remWL)(string lexema, string token);
-		bool (*defaultWL)();
+		Lista *wordList; //TODO: trocar para HashMap
+		Lista *tknVec;
+		bool (*addWL)(struct s_AnalsdrLex*, string lexema, 
+											string token);
+		bool (*remWL)(struct s_AnalsdrLex*, string lexema, 
+											string token);
+		bool (*defaultWL)(struct s_AnalsdrLex *self);
 		void (*start)(struct s_AnalsdrLex *self);
     } AnalisadorLexico;
 
-	Lista wordList;
+	AnalisadorLexico* new_AnalisadorLexico(string path);
 
+	void del_AnalisadorLexico(AnalisadorLexico*);
 #endif //__ANALISADOR_LEXICO_H

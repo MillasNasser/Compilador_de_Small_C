@@ -2,9 +2,10 @@
 #define __HEADER_H
     #include <stdio.h>
     #include <stdlib.h>
+    #include <string.h>
 
     #define build(dest, src) \
-            memcpy(dest, src, sizeof(src))
+            memcpy(dest, src, sizeof(*src))
 
     ///Tipo boolean definido
     typedef char bool;
