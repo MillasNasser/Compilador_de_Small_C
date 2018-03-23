@@ -1,6 +1,9 @@
 #ifndef __IO_H
 #define __IO_H
 	#include "HeaderPadrao.h"
+	
+	typedef string buffer;
+
 	typedef struct s_IO{
 		FILE *sourceCode;
 		void (*openFile)(struct s_IO *self, string path);
@@ -12,4 +15,6 @@
 	IO* new_IO(string path);
 	
 	void del_IO(IO*);
+
+	void fill_buffer(IO*, buffer *buff, size_t nmemb);
 #endif //__IO_H

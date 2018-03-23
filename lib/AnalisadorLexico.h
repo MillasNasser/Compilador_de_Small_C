@@ -7,11 +7,9 @@
 
     typedef struct s_AnalsdrLex{
         IO *io;
-		Lista *wordList; //TODO: trocar para HashMap
+		Lista *wordList;
 		Lista *tknVec;
 		bool (*addWL)(struct s_AnalsdrLex*, string lexema, 
-											string token);
-		bool (*remWL)(struct s_AnalsdrLex*, string lexema, 
 											string token);
 		bool (*defaultWL)(struct s_AnalsdrLex *self);
 		void (*start)(struct s_AnalsdrLex *self);

@@ -1,7 +1,7 @@
 #ifndef __LISTA_h
 #define __LISTA_h
-#include "HeaderPadrao.h"
-
+    #include "HeaderPadrao.h"
+//----------------------------------------------------------
 #define lista_size 1 //Numero inicial de elementos na lista
 
 //Acessa o elemento atual
@@ -23,7 +23,10 @@ typedef struct s_No{
     void *valor; //Dado armazenado
 
     /*Verifica se o valor de dois No's são iguais*/
-    bool (*equals)(struct s_No self, struct s_No element);
+    /*Necessita de uma função que verifica se os dados são 
+      iguais*/
+    bool (*equals)( struct s_No self, struct s_No element, 
+                    int (*dataEquals)(void*,void*));
 }No;
 #define No_NULL (No){0,NULL,NULL}//Definição de NULL para No
 
@@ -59,24 +62,26 @@ typedef struct s_Lista{
     No (*pop)(struct s_Lista* self, int index);
 
     /*Busca um item na lista, o primeiro valor encontrado 
-    é retornado o seu index*/
+    é retornado o seu index
+    Necessário passar uma função que compara os dados
+    */
     int (*busca)(struct s_Lista* self, void *item, 
-                 size_t size);
+                 size_t size, int (*dtEqls)(void*,void*));
 
     /*Retorna o item no determinado index*/
     No* (*get)(struct s_Lista* self, int index);
 
     /*Verifica se há tal item na lista */
     bool (*existe)(struct s_Lista* self, void *item, 
-                    size_t size);
+                    size_t size,int (*dtEqls)(void*,void*));
 }Lista;
 
 /*Faz a inicialização da lista*/
-Lista* new_lista();
+Lista* new_Lista();
 
 /*Faz a inicialização do No*/
-No new_no(size_t size, void* data);
+No new_No(void* data, size_t size);
 
 /*Deleta todos os elementos e destroi a lista*/
-void drop_lista(Lista* lista);
+void del_Lista(Lista* lista);
 #endif //__LISTA_h

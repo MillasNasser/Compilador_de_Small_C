@@ -3,6 +3,7 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
+    #include <regex.h>
 
     #define build(dest, src) \
             memcpy(dest, src, sizeof(*src))
@@ -14,4 +15,7 @@
     
     ///Tipo string definido
     typedef char* string;
+
+    ///Inclusão da biblioteca de funções e estruturas úteis
+    #include "utils.h"
 #endif //__HEADER_H

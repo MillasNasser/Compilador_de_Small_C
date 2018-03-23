@@ -13,13 +13,13 @@ void lst_add(Lista* lista, void* dado, size_t size, int index){
 	//Se for necessario inserir no final
 	if(index == final || index == lista->qnt){
 		lista->end = d_add(lista->end,lista->__tam_max);
-		lista->lista[lista->end] = new_no(size, dado);
+		lista->lista[lista->end] = new_No(dado, size);
 	}else 
 
 	//Se for inserir no inicio
 	if(index == inicio){
 		lista->begin =d_rem(lista->begin, lista->__tam_max);
-		lista->lista[lista->begin] = new_no(size, dado);
+		lista->lista[lista->begin] = new_No(dado, size);
 	}else 
 
 	//Se for inserir em uma posição central
@@ -28,7 +28,7 @@ void lst_add(Lista* lista, void* dado, size_t size, int index){
 	if(index < lista->qnt && index > 0){
 		lista->end = d_add(lista->end, lista->__tam_max);
 		lista->lista[lista->end] = lista->lista[index];
-		lista->lista[index] = new_no(size, dado);
+		lista->lista[index] = new_No(dado, size);
 	}
 	lista->qnt++;
 }
@@ -65,18 +65,21 @@ No lst_pop(Lista* lista, int index){
 	return No_NULL;
 }
 
-bool lst_equals(No elem1, No elem2){
-	if( elem1.size == elem2.size &&
-		elem1.valor == elem2.valor){
-		return true;
+bool no_equals(No elem1, No elem2, int (*dataEquals)(void*,void*)){
+	if( elem1.size == elem2.size){
+		if(dataEquals(elem1.valor,elem2.valor)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	return false;
 }
 
-int lst_busca(Lista* lista, void *item, size_t size){
+int lst_busca(Lista* lista, void *item, size_t size, int (*dataEquals)(void*,void*)){
 	int i;
 	for(i = 0; i < lista->qnt; i++){
-		if(lst_equals(*(lista->get(lista,i)), new_no(size,item))){
+		if(no_equals(*(lista->get(lista,i)), new_No(item, size), dataEquals)){
 			return i;
 		}
 	}
@@ -92,19 +95,19 @@ No* lst_get(Lista* lista, int index){
 		];
 }
 
-bool lst_existe(Lista* lista, void *item, size_t size){
-	if(lst_busca(lista,item,size) >= 0)
+bool lst_existe(Lista* lista, void *item, size_t size, int (*dataEquals)(void*,void*)){
+	if(lst_busca(lista, item, size, dataEquals) >= 0)
 		return true;
 	return false;
 }
 /*---------------------------------------*/
-void drop_lista(Lista* lista){
+void del_Lista(Lista* lista){
 	free(lista->lista);
 	free(lista);
 }
 
 /*Tamanho inicial da lista é sempre lista_size*/
-Lista* new_lista(){
+Lista* new_Lista(){
 	Lista* nova = malloc(sizeof(Lista));
 	nova->begin = nova->end = 0;
 	nova->lista = calloc(lista_size,sizeof(No));
@@ -119,7 +122,7 @@ Lista* new_lista(){
 	return nova;
 }
 
-No new_no(size_t size, void* data){
-	No novo = (No){size,data, lst_equals};
+No new_No(void* data, size_t size){
+	No novo = (No){size,data,no_equals};
 	return novo;
 }
