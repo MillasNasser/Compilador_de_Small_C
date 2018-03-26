@@ -55,14 +55,14 @@ bool AnLex_defaultWL(AnalisadorLexico *this){
 }
 
 void AnLex_start(struct s_AnalsdrLex *this){
-	int i,j;
-	/*Buffer de 32kb para a leitura do arquivo*/
+	int i, j;
 	regex_t regex;
 	regmatch_t match[1];
-	buffer leitura = calloc(1024*32,sizeof(char));
+	buffer leitura;
 	Lista *wordList = this->wordList;
-	fill_buffer(this->io,&leitura,1024*32);
-
+	IO *io = this->io;
+	fill_buffer(io, &leitura);
+	
 	for(i = 0; i < wordList->qnt; i++){
 		string descrtr = leitura;
 		Chave *analisarBkp= (Chave*)wordList->get(wordList,i)->valor;
@@ -75,7 +75,8 @@ void AnLex_start(struct s_AnalsdrLex *this){
 			Chave *analisar;
 			
 			int index;
-			index = wordList->busca(wordList,&(Chave){word,NULL},sizeof(Chave),Chave_equals);
+			index = wordList->busca(wordList,&(Chave){word,NULL},sizeof(Chave),
+																 Chave_equals);
 			if(index != -1){
 				analisar = (Chave*)wordList->get(wordList,index)->valor;
 			}else{
@@ -85,16 +86,31 @@ void AnLex_start(struct s_AnalsdrLex *this){
 			for(j = 0; j < matchSize; j++){
 				descrtr[match[0].rm_so+j] = ' ';
 			}
-			Token *new = new_Token(word,analisar->token,(descrtr+match[0].rm_so)-leitura);
+			Token *new = new_Token(word,analisar->token,
+					  (descrtr+match[0].rm_so)-leitura);
 			descrtr += match[0].rm_eo;
 			this->tknVec->add(this->tknVec,new,sizeof(Token),final);
 		}
 		regfree(&regex);
 	}
 	
-	qsort(this->tknVec->get(this->tknVec,0),this->tknVec->qnt,sizeof(No),qsort_TknEquals);
-
-	//TODO: Realizar o cálculo correto de linhas
+	qsort(this->tknVec->get(this->tknVec,0),this->tknVec->qnt,sizeof(No),
+														qsort_TknEquals);
+	
+	int numeroLinha = 1;
+	for(i = 0, j = 0; i < strlen(leitura);i++){
+		Token *tokenAtual = (Token*)this->tknVec->get(this->tknVec,j)->valor;
+		if(leitura[i] == '\n'){
+			numeroLinha++;
+		}else if(leitura[i] != ' ' && leitura[i] != '\t' && leitura[i] != '\n'){
+			printf("Erro lexico na linha %d: " 
+					"caractere %c invalido!\n", numeroLinha, leitura[i]);
+		}
+		if(tokenAtual->linha == i){
+			tokenAtual->linha = numeroLinha;
+			j++;
+		}
+	}
 	
 	free(leitura);
 }

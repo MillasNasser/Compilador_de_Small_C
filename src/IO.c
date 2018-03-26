@@ -47,16 +47,22 @@ void del_IO(IO *io){
     free(io);
 }
 
-void fill_buffer(IO *io, buffer *buff, size_t nmemb){
+void fill_buffer(IO *io, buffer *buff){
 	if(io == NULL){
         perror("Entrada nao definida"); exit(-1);
-    }else if(nmemb <= 0){
-		perror("Tamanho invalido"); exit(-2);
-	}else if(buff == NULL || *buff == NULL){
+    }else if(buff == NULL || *buff == NULL){
 		perror("Buffer nao definido"); exit(-3);
 	}else{
-		int i; (*buff)[nmemb-1] = '\0';
-		for(i=0; i<nmemb-1 && !feof(io->sourceCode); i++){
+		fseek(io->sourceCode,0,SEEK_END);
+		int sizeVec = ftell(io->sourceCode);
+		rewind(io->sourceCode);
+		
+		*buff = (string) malloc(sizeVec * sizeof(char));
+		
+		///fread(buff,sizeof(char),sizeVec,io->sourceCode);
+		
+		int i; 
+		for(i=0; !feof(io->sourceCode); i++){
 			char a = io->getNextChar(io);
 			if(a == EOF){ (*buff)[i] = '\0';break;}
 			(*buff)[i] = a;

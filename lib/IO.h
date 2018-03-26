@@ -16,5 +16,5 @@
 	
 	void del_IO(IO*);
 
-	void fill_buffer(IO*, buffer *buff, size_t nmemb);
+	void fill_buffer(IO*, buffer *buff);
 #endif //__IO_H
