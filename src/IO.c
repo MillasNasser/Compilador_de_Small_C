@@ -59,8 +59,6 @@ void fill_buffer(IO *io, buffer *buff){
 		
 		*buff = (string) malloc(sizeVec * sizeof(char));
 		
-		///fread(buff,sizeof(char),sizeVec,io->sourceCode);
-		
 		int i; 
 		for(i=0; !feof(io->sourceCode); i++){
 			char a = io->getNextChar(io);

@@ -1,10 +1,8 @@
 #include "AnalisadorLexico.h"
 
-int main(){
-    //printf("Saida\n");
-    //IO *io = new_IO("./utils/cod.c");
+int main(int argc, char *argv[]){
     int i;
-    AnalisadorLexico *ss = new_AnalisadorLexico("./utils/cod.c");
+    AnalisadorLexico *ss = new_AnalisadorLexico(argv[1]);
     ss->start(ss);
     
 	printf("Linha|    Lexema    |Valor\n");
@@ -19,8 +17,3 @@ int main(){
     del_AnalisadorLexico(ss);
     return 0;
 }
-/*while(!feof(ss->io->sourceCode)){
-        char saida = ss->io->getNextChar(ss->io);
-        printf("%c",saida);
-    }
-*/
