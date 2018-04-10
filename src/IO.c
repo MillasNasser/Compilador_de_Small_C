@@ -48,22 +48,22 @@ void del_IO(IO *io){
 }
 
 void fill_buffer(IO *io, buffer *buff){
+    string bufferRetorno = NULL;
 	if(io == NULL){
         perror("Entrada nao definida"); exit(-1);
     }else if(buff == NULL || *buff == NULL){
 		perror("Buffer nao definido"); exit(-3);
-	}else{
-		fseek(io->sourceCode,0,SEEK_END);
-		int sizeVec = ftell(io->sourceCode);
-		rewind(io->sourceCode);
-		
-		*buff = (string) malloc(sizeVec * sizeof(char));
-		
-		int i; 
-		for(i=0; !feof(io->sourceCode); i++){
-			char a = io->getNextChar(io);
-			if(a == EOF){ (*buff)[i] = '\0';break;}
-			(*buff)[i] = a;
-		}
 	}
+ 
+    fseek(io->sourceCode,0,SEEK_END);
+    int sizeVec = ftell(io->sourceCode);
+    rewind(io->sourceCode);
+    
+    bufferRetorno = (string)calloc(sizeVec, sizeof(char));
+    fread(bufferRetorno, sizeof(char), sizeVec, io->sourceCode);
+
+    int i;
+    for(i = strlen(bufferRetorno)-1; bufferRetorno[i] =='\n'; i--);
+    bufferRetorno[i+1] = '\0';
+    *buff = bufferRetorno;
 }

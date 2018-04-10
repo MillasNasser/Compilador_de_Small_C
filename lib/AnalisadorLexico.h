@@ -5,13 +5,13 @@
 	#include "lista.h"
 	#include "Token.h"
 
+	Lista *wordList;
+	Lista *tknVec;
+
     typedef struct s_AnalsdrLex{
         IO *io;
-		Lista *wordList;
-		Lista *tknVec;
-		bool (*addWL)(struct s_AnalsdrLex *self, string lexema, 
-												 string token);
-		bool (*defaultWL)(struct s_AnalsdrLex *self);
+		bool (*addWL)(string lexema, string token);
+		bool (*defaultWL)();
 		void (*start)(struct s_AnalsdrLex *self);
     } AnalisadorLexico;
 

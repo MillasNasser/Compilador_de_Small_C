@@ -7,8 +7,8 @@ int main(int argc, char *argv[]){
     
 	printf("Linha|    Lexema    |Valor\n");
 	printf("-----+--------------+---------------\n");
-    for(i = 0; i < ss->tknVec->qnt; i++){
-        No *saida = ss->tknVec->get(ss->tknVec,i);
+    for(i = 0; i < tknVec->qnt; i++){
+        No *saida = tknVec->get(tknVec,i);
         printf("%5lu| %13s| %s\n", ((Token*)saida->valor)->linha,
 								 ((Token*)saida->valor)->lexema, 
 								 ((Token*)saida->valor)->nome);

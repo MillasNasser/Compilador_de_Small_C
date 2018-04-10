@@ -28,11 +28,27 @@ static int qsort_TknEquals(const void *src1, const void *src2){
 	return 0;
 }
 
+void define_linhas_dos_tokens(buffer leitura){
+	int i,j;
+	int numeroLinha = 1;
+	for(i = 0, j = 0; i < strlen(leitura);i++){
+		Token *tokenAtual = (Token*)tknVec->get(tknVec,j)->valor;
+		if(leitura[i] == '\n'){
+			numeroLinha++;
+		}else if(leitura[i] != ' ' && leitura[i] != '\t' && leitura[i] != '\n'){
+			printf("Erro lexico na linha %d: " 
+					"caractere %c invalido!\n", numeroLinha, leitura[i]);
+		}
+		if(tokenAtual->linha == i){
+			tokenAtual->linha = numeroLinha;
+			j++;
+		}
+	}
+}
+
 /* ------------------------- Métodos Públicos ------------------------- */
-bool AnLex_addWL(AnalisadorLexico *this,const string regex,
-										const string token){
+bool AnLex_addWL(const string regex, const string token){
 	if(regex[0] == EOF && strlen(regex) == 1);
-	Lista *wordList = this->wordList;
 	Chave *new = malloc(sizeof(Chave));
 	new->regex = new_string(regex);
 	new->token = new_string(token);
@@ -40,16 +56,16 @@ bool AnLex_addWL(AnalisadorLexico *this,const string regex,
 	return true;
 }
 
-bool AnLex_defaultWL(AnalisadorLexico *this){
+bool AnLex_defaultWL(){
 	char reg_ex[500];
 	char token[500];
-	this->wordList = new_Lista();
+	wordList = new_Lista();
 	FILE *def = fopen("./utils/regexList.txt","r");
 
 	if(def == NULL) return false;
 	while(!feof(def)){
 		fscanf(def,"%s %s",reg_ex,token);
-		AnLex_addWL(this,reg_ex,token);
+		AnLex_addWL(reg_ex,token);
 	}
 	return true;
 }
@@ -58,8 +74,7 @@ void AnLex_start(struct s_AnalsdrLex *this){
 	int i, j;
 	regex_t regex;
 	regmatch_t match[1];
-	buffer leitura;
-	Lista *wordList = this->wordList;
+	buffer leitura = "";
 	IO *io = this->io;
 	fill_buffer(io, &leitura);
 	
@@ -89,29 +104,15 @@ void AnLex_start(struct s_AnalsdrLex *this){
 			Token *new = new_Token(word,analisar->token,
 					  (descrtr+match[0].rm_so)-leitura);
 			descrtr += match[0].rm_eo;
-			this->tknVec->add(this->tknVec,new,sizeof(Token),final);
+			tknVec->add(tknVec,new,sizeof(Token),final);
 		}
 		regfree(&regex);
 	}
 	
-	qsort(this->tknVec->get(this->tknVec,0),this->tknVec->qnt,sizeof(No),
-														qsort_TknEquals);
+	qsort(tknVec->get(tknVec,0),tknVec->qnt,sizeof(No), qsort_TknEquals);
 	
-	int numeroLinha = 1;
-	for(i = 0, j = 0; i < strlen(leitura);i++){
-		Token *tokenAtual = (Token*)this->tknVec->get(this->tknVec,j)->valor;
-		if(leitura[i] == '\n'){
-			numeroLinha++;
-		}else if(leitura[i] != ' ' && leitura[i] != '\t' && leitura[i] != '\n'){
-			printf("Erro lexico na linha %d: " 
-					"caractere %c invalido!\n", numeroLinha, leitura[i]);
-		}
-		if(tokenAtual->linha == i){
-			tokenAtual->linha = numeroLinha;
-			j++;
-		}
-	}
-	
+	define_linhas_dos_tokens(leitura);
+
 	free(leitura);
 }
 
@@ -119,7 +120,7 @@ void AnLex_start(struct s_AnalsdrLex *this){
 AnalisadorLexico* new_AnalisadorLexico(string path){
 	AnalisadorLexico *new= malloc(sizeof(AnalisadorLexico));
 	AnLex_defaultWL(new);
-	new->tknVec = new_Lista();
+	tknVec = new_Lista();
 	new->io = new_IO(path);
 	new->defaultWL = AnLex_defaultWL;
 	new->start = AnLex_start;
@@ -128,6 +129,7 @@ AnalisadorLexico* new_AnalisadorLexico(string path){
 
 void del_AnalisadorLexico(AnalisadorLexico *this){
 	del_IO(this->io);
-	del_Lista(this->wordList);
+	del_Lista(wordList);
+	del_Lista(tknVec);
 	free(this);
 }
