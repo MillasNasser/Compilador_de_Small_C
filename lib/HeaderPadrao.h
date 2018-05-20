@@ -15,6 +15,7 @@
     
     ///Tipo string definido
     typedef char* string;
+    #define str_size 30 //Tamanho padrão
 
     ///Inclusão da biblioteca de funções e estruturas úteis
     #include "utils.h"
