@@ -11,8 +11,11 @@ int main()
         i = i + inc;
         a = a*i;
     }    
-    if(i >= 10)
+    if(i != 10)
     {
+        while(a + a){
+            print(z);
+        }
         read j;
     }
     
