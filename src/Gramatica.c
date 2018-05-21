@@ -32,56 +32,51 @@ bool Programa (){
 	if(!match(LBRACKET)) errSynt(LBRACKET);
 	if(!match(RBRACKET)) errSynt(RBRACKET);
 	if(!match(LBRACE)) errSynt(LBRACE);
-	Decl_Comando(0);
+	Decl_Comando();
 	if(!match(RBRACE)) errSynt(RBRACE);
-	printf("PQP\n");
 	return true;
 }
 
-void Decl_Comando (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void Decl_Comando (){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_Declaracao), 
 	 fst_size(FIRST_Declaracao))){
-		Declaracao(nivel+1);
-		Decl_Comando(nivel+1);
+		Declaracao();
+		Decl_Comando();
 	}else
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_Comando), 
 	 fst_size(FIRST_Comando))){
-		Comando(nivel+1);
-		Decl_Comando(nivel+1);
+		Comando();
+		Decl_Comando();
 	}
 }
 
-void Declaracao (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void Declaracao (){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_Tipo), 
 	 fst_size(FIRST_Tipo))){
-		Tipo(nivel+1);
+		Tipo();
 		if(!match(ID)) errSynt(ID);
-		Decl2(nivel+1);
+		Decl2();
 		return;
 	}
 	errSynt("de Declaracao");;
 }
 
-void Decl2 (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void Decl2 (){
 	if(match(COMMA)){
 		if(!match(ID)) errSynt(ID);
-		Decl2(nivel+1);
+		Decl2();
 		return;
 	}else if(match(PCOMMA)){
 		return;
 	}else if(match(ATTR)){
-		Expressao(nivel+1);
-		Decl2(nivel+1);
+		Expressao();
+		Decl2();
 		return;
 	}
 	errSynt("de Decl2");
 }
 
-void Tipo (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void Tipo (){
 	if(match(INT)) {
 		return;
 	}else if(match(FLOAT)) {
@@ -91,169 +86,152 @@ void Tipo (int nivel){
 	errSynt("de Tipo");
 }
 
-void Comando (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void Comando (){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_Bloco), 
 	 fst_size(FIRST_Bloco))){
-		Bloco(nivel+1);
+		Bloco();
 		return;
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_Atribuicao), 
 	 fst_size(FIRST_Atribuicao))){
-		Atribuicao(nivel+1);
+		Atribuicao();
 		return;
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_ComandoSe), 
 	 fst_size(FIRST_ComandoSe))){
-		ComandoSe(nivel+1);
+		ComandoSe();
 		return;
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_ComandoEnquanto), 
 	 fst_size(FIRST_ComandoEnquanto))){
-		ComandoEnquanto(nivel+1);
+		ComandoEnquanto();
 		return;
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_ComandoRead), 
 	 fst_size(FIRST_ComandoRead))){
-		ComandoRead(nivel+1);
+		ComandoRead();
 		return;
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_ComandoPrint), 
 	 fst_size(FIRST_ComandoPrint))){
-		ComandoPrint(nivel+1);
+		ComandoPrint();
 		return;
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_ComandoFor), 
 	 fst_size(FIRST_ComandoFor))){
-		ComandoFor(nivel+1);
+		ComandoFor();
 		return;
 	}
 	errSynt("de Comando");
 }
 
-void Bloco (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void Bloco (){
 	if(!match(LBRACE)) errSynt(LBRACE);
-	Decl_Comando(nivel+1);
+	Decl_Comando();
 	if(!match(RBRACE)) errSynt(RBRACE);
 }
 
-void Atribuicao (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void Atribuicao (){
 	if(!match(ID)) errSynt(ID);
 	if(!match(ATTR)) errSynt(ATTR);
-	Expressao(nivel+1);
+	Expressao();
 	if(!match(PCOMMA)) errSynt(PCOMMA);
 }
 
-void ComandoSe (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void ComandoSe (){
 	if(!match(IF)) errSynt(IF);
 	if(!match(LBRACKET)) errSynt(LBRACKET);
-	Expressao(nivel+1);
+	Expressao();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
-	Comando(nivel+1);
-	ComandoSenao(nivel+1);
+	Comando();
+	ComandoSenao();
 }
 
-void ComandoSenao (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void ComandoSenao (){
 	if(match(ELSE)){
-		Comando(nivel+1);
+		Comando();
 	}
 }
 
-void ComandoEnquanto (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void ComandoEnquanto (){
 	if(!match(WHILE)) errSynt(WHILE);
 	if(!match(LBRACKET)) errSynt(LBRACKET);
-	Expressao(nivel+1);
+	Expressao();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
-	Comando(nivel+1);
+	Comando();
 }
 
-void ComandoRead (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void ComandoRead (){
 	if(!match(READ)) errSynt(READ);
 	if(!match(ID)) errSynt(ID);
 	if(!match(PCOMMA)) errSynt(PCOMMA);
 }
 
-void ComandoPrint (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void ComandoPrint (){
 	if(!match(PRINT)) errSynt(PRINT);
 	if(!match(LBRACKET)) errSynt(LBRACKET);
-	Expressao(nivel+1);
+	Expressao();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
 	if(!match(PCOMMA)) errSynt(PCOMMA);
 }
 
-void ComandoFor(int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void ComandoFor(){
 	if(!match(FOR)) errSynt(FOR);
 	if(!match(LBRACKET)) errSynt(LBRACKET);
-	AtribuicaoFor(nivel+1);
+	AtribuicaoFor();
 	if(!match(PCOMMA)) errSynt(PCOMMA);
-	Expressao(nivel+1);
+	Expressao();
 	if(!match(PCOMMA)) errSynt(PCOMMA);
-	AtribuicaoFor(nivel+1);
+	AtribuicaoFor();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
-	Comando(nivel+1);
+	Comando();
 }
 
-void AtribuicaoFor(int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void AtribuicaoFor(){
 	if(!match(ID)) errSynt(ID);
 	if(!match(ATTR)) errSynt(ATTR);
-	Expressao(nivel+1);
+	Expressao();
 }
 
-void Expressao (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
-	Conjuncao(nivel+1);
-	ExpressaoOpc(nivel+1);
+void Expressao (){
+	Conjuncao();
+	ExpressaoOpc();
 }
 
-void ExpressaoOpc (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void ExpressaoOpc (){
 	if(match(OR)){
-		Conjuncao(nivel+1);
-		ExpressaoOpc(nivel+1);
+		Conjuncao();
+		ExpressaoOpc();
 	}
 }
 
-void Conjuncao(int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
-	Igualdade(nivel+1);
-	ConjuncaoOpc(nivel+1);
+void Conjuncao(){
+	Igualdade();
+	ConjuncaoOpc();
 }
 
-void ConjuncaoOpc (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void ConjuncaoOpc (){
 	if(match(AND)){
-		Igualdade(nivel+1);
-		ConjuncaoOpc(nivel+1);
+		Igualdade();
+		ConjuncaoOpc();
 	}
 }
 
-void Igualdade (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
-	Relacao(nivel+1);
-	IgualdadeOpc(nivel+1);
+void Igualdade (){
+	Relacao();
+	IgualdadeOpc();
 }
 
-void IgualdadeOpc(int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void IgualdadeOpc(){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_IgualdadeOpc),
 	 fst_size(FIRST_IgualdadeOpc))){    
-		OpIgual(nivel+1);
-		Relacao(nivel+1);
-		IgualdadeOpc(nivel+1);
+		OpIgual();
+		Relacao();
+		IgualdadeOpc();
 	}
 }
 
-void OpIgual (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void OpIgual (){
 	if(match(EQ)){
 		return;
 	}else if(match(NE)){
@@ -263,24 +241,21 @@ void OpIgual (int nivel){
 	errSynt("de OpIgual");
 }
 
-void Relacao (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
-	Adicao(nivel+1);
-	RelacaoOpc(nivel+1);
+void Relacao (){
+	Adicao();
+	RelacaoOpc();
 }
 
-void RelacaoOpc (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void RelacaoOpc (){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_RelacaoOpc),
 	 fst_size(FIRST_RelacaoOpc))){
-		OpRel(nivel+1);
-		Adicao(nivel+1);
-		RelacaoOpc(nivel+1);
+		OpRel();
+		Adicao();
+		RelacaoOpc();
 	}
 }
 
-void OpRel (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void OpRel (){
 	if(match(LT)){
 		return;
 	}else if(match(LE)){
@@ -294,24 +269,21 @@ void OpRel (int nivel){
 	errSynt("de OpRel");
 }
 
-void Adicao (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
-	Termo(nivel+1);
-	AdicaoOpc(nivel+1);
+void Adicao (){
+	Termo();
+	AdicaoOpc();
 }
 
-void AdicaoOpc (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void AdicaoOpc (){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_AdicaoOpc),
 	 fst_size(FIRST_AdicaoOpc))){
-		OpAdicao(nivel+1);
-		Adicao(nivel+1);
-		RelacaoOpc(nivel+1);
+		OpAdicao();
+		Adicao();
+		RelacaoOpc();
 	}
 }
 
-void OpAdicao (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void OpAdicao (){
 	if(match(PLUS)){
 		return;
 	}else if(match(MINUS)){
@@ -321,24 +293,21 @@ void OpAdicao (int nivel){
 	errSynt("de OpAdicao");
 }
 
-void Termo (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
-	Fator(nivel+1);
-	TermoOpc(nivel+1);
+void Termo (){
+	Fator();
+	TermoOpc();
 }
 
-void TermoOpc (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void TermoOpc (){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_TermoOpc),
 	 fst_size(FIRST_TermoOpc))){
-		OpMult(nivel+1);
-		Fator(nivel+1);
-		TermoOpc(nivel+1);
+		OpMult();
+		Fator();
+		TermoOpc();
 	}
 }
 
-void OpMult (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void OpMult (){
 	if(match(MULT)){
 		return;
 	}else if(match(DIV)){
@@ -348,8 +317,7 @@ void OpMult (int nivel){
 	errSynt("de OpMult");
 }
 
-void Fator (int nivel){
-	printf("%d%*c%s: %s\n",nivel,nivel,' ', __func__, getInLex());
+void Fator (){
 	if(match(ID)){
 		return;
 	}else if(match(INTEGER_CONST)){
@@ -357,7 +325,7 @@ void Fator (int nivel){
 	}else if(match(FLOAT_CONST)){
 		return;
 	}else if(match(LBRACKET)){
-		Expressao(nivel+1);
+		Expressao();
 		if(!match(RBRACKET)) errSynt(RBRACKET);
 	}
 

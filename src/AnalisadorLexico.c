@@ -29,20 +29,21 @@ static int qsort_TknEquals(const void *src1, const void *src2){
 }
 
 void define_linhas_dos_tokens(buffer leitura){
-	int i,j;
+	int i;
 	int numeroLinha = 1;
-	for(i = 0, j = 0; i < strlen(leitura);i++){
-		Token *tokenAtual = (Token*)tknVec->get(tknVec,j)->valor;
+	for(i = 0; i < strlen(leitura);i++){
 		if(leitura[i] == '\n'){
 			numeroLinha++;
 		}else if(leitura[i] != ' ' && leitura[i] != '\t' && leitura[i] != '\n'){
 			printf("Erro lexico na linha %d: " 
 					"caractere %c invalido!\n", numeroLinha, leitura[i]);
 		}
-		if(tokenAtual->linha == i){
-			tokenAtual->linha = numeroLinha;
-			j++;
-		}
+		leitura[i] = numeroLinha;
+	}
+	for(i = 0; i < tknVec->qnt;i++){
+		No* tknNo = tknVec->get(tknVec,i);
+		Token *tokenAtual = (Token*)tknNo->valor;
+		tokenAtual->linha = leitura[tokenAtual->linha];
 	}
 }
 
