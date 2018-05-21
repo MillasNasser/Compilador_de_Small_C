@@ -37,6 +37,7 @@ void define_linhas_dos_tokens(buffer leitura){
 		}else if(leitura[i] != ' ' && leitura[i] != '\t' && leitura[i] != '\n'){
 			printf("Erro lexico na linha %d: " 
 					"caractere %c invalido!\n", numeroLinha, leitura[i]);
+			exit(-3);
 		}
 		leitura[i] = numeroLinha;
 	}

@@ -122,6 +122,7 @@ void Comando (){
 		ComandoFor();
 		return;
 	}
+	
 	errSynt("de Comando");
 }
 
@@ -327,7 +328,9 @@ void Fator (){
 	}else if(match(LBRACKET)){
 		Expressao();
 		if(!match(RBRACKET)) errSynt(RBRACKET);
+		return;
 	}
 
+	printf("%s\n", getInLex());
 	errSynt("de Fator");
 }

@@ -28,7 +28,8 @@
 							FIRST_ComandoSe,\
 							FIRST_ComandoEnquanto,\
 							FIRST_ComandoRead,\
-							FIRST_ComandoPrint
+							FIRST_ComandoPrint,\
+							FIRST_ComandoFor
 
 	#define FIRST_Bloco	"LBRACE"
 
