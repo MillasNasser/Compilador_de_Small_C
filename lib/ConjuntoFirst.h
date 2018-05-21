@@ -6,7 +6,7 @@
 	#define fst_size(NOME) (sizeof((char [][str_size]){NOME})\
 							/str_size)
 
-	#define fst_mtrx(NOME) ((char[][str_size]){NOME})
+	#define fst_toMtrx(NOME) ((char[][str_size]){NOME})
 
 	/* Definindo os FIRSTS */
 	#define FIRST_Programa "INT"
@@ -16,7 +16,7 @@
 
 	#define FIRST_Declaracao FIRST_Tipo
 
-	#define FIRST_DecI2 	"COMMA",\
+	#define FIRST_Decl2 	"COMMA",\
 							"PCOMMA",\
 							"ATTR"
 
@@ -43,6 +43,10 @@
 	#define FIRST_ComandoRead	"READ"
 	
 	#define FIRST_ComandoPrint	"PRINT"
+
+	#define FIRST_ComandoFor "FOR"
+
+	#define FIRST_AtribicaoFor "ID"
 	
 	#define FIRST_Expressao	FIRST_Conjuncao
 	
@@ -86,4 +90,8 @@
 						"FLOAT_CONST",\
 						"LBRACKET"
 
+	/* Metodos */
+	/* Função que identifica um lexema no conjunto first 
+		Ex: inFirst("INT", firstPass(FIRST_Programa));*/
+	bool inFirst(string lex, char first[][str_size], unsigned int size);
 #endif //__CONJUNTO_FIRST_H_
