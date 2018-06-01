@@ -31,16 +31,20 @@ static int qsort_TknEquals(const void *src1, const void *src2){
 void define_linhas_dos_tokens(buffer leitura){
 	int i;
 	int numeroLinha = 1;
+	int ocorreuErro = 0;
 	for(i = 0; i < strlen(leitura);i++){
 		if(leitura[i] == '\n'){
 			numeroLinha++;
 		}else if(leitura[i] != ' ' && leitura[i] != '\t' && leitura[i] != '\n'){
 			printf("Erro lexico na linha %d: " 
 					"caractere %c invalido!\n", numeroLinha, leitura[i]);
-			exit(-3);
+			ocorreuErro = 1;
 		}
 		leitura[i] = numeroLinha;
 	}
+
+	if(ocorreuErro){exit(-3);}
+
 	for(i = 0; i < tknVec->qnt;i++){
 		No* tknNo = tknVec->get(tknVec,i);
 		Token *tokenAtual = (Token*)tknNo->valor;

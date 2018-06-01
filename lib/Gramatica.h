@@ -4,6 +4,7 @@
     #include "Token.h"
     #include "lista.h"
     #include "ConjuntoFirst.h"
+    #include "TabelaSimbolos.h"
 
     extern Lista* tknVec;
     int index_entrada;
@@ -14,7 +15,7 @@
     void Decl_Comando ();
     void Declaracao ();
     void Decl2 ();
-    void Tipo ();
+    string Tipo ();
     void Comando ();
     void Bloco ();
     void Atribuicao ();

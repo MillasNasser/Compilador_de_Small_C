@@ -4,6 +4,12 @@
     #include "AnalisadorLexico.h"
     #include "Gramatica.h"
 
-    /* Variaveis globais */
+    typedef struct s_AnalsdrSint{
+        void (*start)(string path);
+    } AnalisadorSintatico;
+
+	AnalisadorSintatico* new_AnalisadorSintatico();
+
+	void del_AnalisadorSintatico(AnalisadorSintatico*);
     
 #endif //__ANALISADOR_SINTATICO_H_

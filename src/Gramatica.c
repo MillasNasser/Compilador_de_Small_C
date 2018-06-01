@@ -19,8 +19,24 @@ bool match(string token){
 	return false;
 }
 
+bool add_TabelaDeSimbolos(string tipo){
+	/* Adicionando na tabela de simbolos */
+	index_entrada--;
+	Token *tokenEntrada = (Token*)tknVec->get(tknVec,index_entrada)->valor;
+
+	int adicionou = add_Tabela(new_EntradaTabela(
+		tokenEntrada->linha,
+		tokenEntrada->nome,
+		tipo,
+		NULL
+	));
+	index_entrada++;
+
+	return adicionou;
+}
+
 void Gramatica_init(){
-	//printf("%s\n",__func__);
+	new_Tabela();
 	index_entrada = 0;
 	if(tknVec == NULL) exit(-2);
 }
@@ -53,37 +69,43 @@ void Decl_Comando (){
 void Declaracao (){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_Tipo), 
 	 fst_size(FIRST_Tipo))){
-		Tipo();
+		string tipo = Tipo();
 		if(!match(ID)) errSynt(ID);
-		Decl2();
+
+		add_TabelaDeSimbolos(tipo);
+
+		Decl2(tipo);
 		return;
 	}
-	errSynt("de Declaracao");;
+	errSynt(fst_toMtrx(FIRST_Declaracao)[0]);
 }
 
-void Decl2 (){
+void Decl2 (string tipo){
 	if(match(COMMA)){
 		if(!match(ID)) errSynt(ID);
-		Decl2();
+
+		add_TabelaDeSimbolos(tipo);
+		
+		Decl2(tipo);
 		return;
 	}else if(match(PCOMMA)){
 		return;
 	}else if(match(ATTR)){
 		Expressao();
-		Decl2();
+		Decl2(tipo);
 		return;
 	}
-	errSynt("de Decl2");
+	errSynt(fst_toMtrx(FIRST_Decl2)[0]);
 }
 
-void Tipo (){
+string Tipo (){
 	if(match(INT)) {
-		return;
+		return INT;
 	}else if(match(FLOAT)) {
-		return;
+		return FLOAT;
 	}
 
-	errSynt("de Tipo");
+	errSynt(fst_toMtrx(FIRST_Tipo)[0]);
 }
 
 void Comando (){
@@ -123,7 +145,7 @@ void Comando (){
 		return;
 	}
 	
-	errSynt("de Comando");
+	errSynt(fst_toMtrx(FIRST_Comando)[0]);
 }
 
 void Bloco (){
@@ -239,7 +261,7 @@ void OpIgual (){
 		return;
 	}
 
-	errSynt("de OpIgual");
+	errSynt(fst_toMtrx(FIRST_OplIgual)[0]);
 }
 
 void Relacao (){
@@ -267,7 +289,7 @@ void OpRel (){
 		return;
 	}
 
-	errSynt("de OpRel");
+	errSynt(fst_toMtrx(FIRST_OpRel)[0]);
 }
 
 void Adicao (){
@@ -291,7 +313,7 @@ void OpAdicao (){
 		return;
 	}
 
-	errSynt("de OpAdicao");
+	errSynt(fst_toMtrx(FIRST_OpAdicao)[0]);
 }
 
 void Termo (){
@@ -315,7 +337,7 @@ void OpMult (){
 		return;
 	}
 
-	errSynt("de OpMult");
+	errSynt(fst_toMtrx(FIRST_OpMult)[0]);
 }
 
 void Fator (){
@@ -332,5 +354,5 @@ void Fator (){
 	}
 
 	printf("%s\n", getInLex());
-	errSynt("de Fator");
+	errSynt(fst_toMtrx(FIRST_Fator)[0]);
 }
