@@ -6,7 +6,7 @@ void AnSint_start(string path){
 
     Gramatica_init();
     Programa();
-    print_Tabela();
+    print_Tabela(path);
 
     del_AnalisadorLexico(ss);
 }

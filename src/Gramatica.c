@@ -5,9 +5,23 @@
 				((Token*)tknVec->get(tknVec,index_entrada)->valor)->linha);\
 				exit(-1);}
 
+FILE *arquivoAST;
+
 string getInLex(){
 	Token *tokenEntrada = (Token*)tknVec->get(tknVec,index_entrada)->valor;
 	return tokenEntrada->lexema;
+}
+
+void verificarIdAST(){
+	EntradaTabela *a = (EntradaTabela*)TabelaDeSimbolos->get(TabelaDeSimbolos,((Token*)tknVec->get(tknVec,index_entrada-1)->valor)->nome);
+	if(a != NULL){
+		fprintf(arquivoAST,"<Id lexema=\'%s\' type=\'%s\' />\n", a->lexema, a->tipo);
+	}else{ 
+		fprintf(arquivoAST,"<Id/>\n");
+		printf("Variavel \'%s\' nao declarada: linha %lu\n", 
+			((Token*)tknVec->get(tknVec,index_entrada-1)->valor)->nome,
+			((Token*)tknVec->get(tknVec,index_entrada-1)->valor)->linha); 
+	}
 }
 
 bool match(string token){
@@ -43,13 +57,17 @@ void Gramatica_init(){
 
 /* Inicio das definições da gramatica*/
 bool Programa (){
+	arquivoAST = fopen("ast.xml","w");
 	if(!match(INT)) errSynt(INT);
 	if(!match(MAIN)) errSynt(MAIN);
 	if(!match(LBRACKET)) errSynt(LBRACKET);
 	if(!match(RBRACKET)) errSynt(RBRACKET);
 	if(!match(LBRACE)) errSynt(LBRACE);
+	fprintf(arquivoAST,"<AST>\n");
 	Decl_Comando();
+	fprintf(arquivoAST,"</AST>\n");
 	if(!match(RBRACE)) errSynt(RBRACE);
+	fclose(arquivoAST);
 	return true;
 }
 
@@ -91,7 +109,11 @@ void Decl2 (string tipo){
 	}else if(match(PCOMMA)){
 		return;
 	}else if(match(ATTR)){
+		fprintf(arquivoAST,"<Attr>\n");
+		EntradaTabela *a = (EntradaTabela*)TabelaDeSimbolos->get(TabelaDeSimbolos,((Token*)tknVec->get(tknVec,index_entrada-2)->valor)->nome);
+		fprintf(arquivoAST,"<Id lexema=\'%s\' type=\'%s\' />\n", a->lexema, a->tipo);
 		Expressao();
+		fprintf(arquivoAST,"</Attr>\n");
 		Decl2(tipo);
 		return;
 	}
@@ -150,24 +172,32 @@ void Comando (){
 
 void Bloco (){
 	if(!match(LBRACE)) errSynt(LBRACE);
+	fprintf(arquivoAST,"<Bloco>\n");
 	Decl_Comando();
 	if(!match(RBRACE)) errSynt(RBRACE);
+	fprintf(arquivoAST,"</Bloco>\n");
 }
 
 void Atribuicao (){
+	fprintf(arquivoAST,"<Attr>\n");
 	if(!match(ID)) errSynt(ID);
+	verificarIdAST();
 	if(!match(ATTR)) errSynt(ATTR);
 	Expressao();
 	if(!match(PCOMMA)) errSynt(PCOMMA);
+
+	fprintf(arquivoAST,"</Attr>\n");
 }
 
 void ComandoSe (){
 	if(!match(IF)) errSynt(IF);
+	fprintf(arquivoAST,"<If>\n");
 	if(!match(LBRACKET)) errSynt(LBRACKET);
 	Expressao();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
 	Comando();
 	ComandoSenao();
+	fprintf(arquivoAST,"</If>\n");
 }
 
 void ComandoSenao (){
@@ -178,28 +208,38 @@ void ComandoSenao (){
 
 void ComandoEnquanto (){
 	if(!match(WHILE)) errSynt(WHILE);
+	fprintf(arquivoAST,"<While>\n");
 	if(!match(LBRACKET)) errSynt(LBRACKET);
 	Expressao();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
 	Comando();
+	fprintf(arquivoAST,"</While>\n");
 }
 
 void ComandoRead (){
+	fprintf(arquivoAST,"<Read>\n");
 	if(!match(READ)) errSynt(READ);
 	if(!match(ID)) errSynt(ID);
+	
+	verificarIdAST();
+	
 	if(!match(PCOMMA)) errSynt(PCOMMA);
+	fprintf(arquivoAST,"</Read>\n");
 }
 
 void ComandoPrint (){
+	fprintf(arquivoAST,"<Print>\n");
 	if(!match(PRINT)) errSynt(PRINT);
 	if(!match(LBRACKET)) errSynt(LBRACKET);
 	Expressao();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
 	if(!match(PCOMMA)) errSynt(PCOMMA);
+	fprintf(arquivoAST,"</Print>\n");
 }
 
 void ComandoFor(){
 	if(!match(FOR)) errSynt(FOR);
+	fprintf(arquivoAST,"<For>\n");
 	if(!match(LBRACKET)) errSynt(LBRACKET);
 	AtribuicaoFor();
 	if(!match(PCOMMA)) errSynt(PCOMMA);
@@ -208,12 +248,18 @@ void ComandoFor(){
 	AtribuicaoFor();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
 	Comando();
+	fprintf(arquivoAST,"</For>\n");
 }
 
 void AtribuicaoFor(){
+	fprintf(arquivoAST, "<Attr>\n");
 	if(!match(ID)) errSynt(ID);
+
+	verificarIdAST();
+
 	if(!match(ATTR)) errSynt(ATTR);
 	Expressao();
+	fprintf(arquivoAST, "</Attr>\n");
 }
 
 void Expressao (){

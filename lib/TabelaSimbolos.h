@@ -21,6 +21,6 @@
 
 	int add_Tabela(EntradaTabela*);
 
-	void print_Tabela();
+	void print_Tabela(string path);
 	
 #endif //__TABELA_DE_SIMBOLO_H_

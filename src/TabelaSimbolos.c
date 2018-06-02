@@ -12,7 +12,7 @@ void new_Tabela(){
 }
 
 EntradaTabela* new_EntradaTabela( unsigned long int linha, string lexema, 
-								string tipo, void*valor){
+								string tipo, void *valor){
 	EntradaTabela *new = malloc(sizeof(EntradaTabela));
 	new->valor = valor;
 	new->tipo = tipo;
@@ -32,18 +32,20 @@ int add_Tabela(EntradaTabela *in){
 	return TabelaDeSimbolos->add(TabelaDeSimbolos,in->lexema,in,sizeof(*in));
 }
 
-void print_Tabela(){
+void print_Tabela(string path){
 	int i;
-	char linha[] = "---------------";
-	printf("+%1$s+%1$s+%1$s+%1$s+\n", linha);
-	printf("|%2$*1$s|%3$*1$s|%4$*1$s|%5$*1$s|\n",
-			15,"Linha","Tipo","Lexema","Valor");
-	printf("+%1$s+%1$s+%1$s+%1$s+\n", linha);
+	FILE *arq = fopen("symboltable.txt","w");
+	fprintf(arq,"-------Symbol Table------------\n");
 	for(i = 0; i < cont; i++){
 		EntradaTabela *aux = (EntradaTabela*)TabelaDeSimbolos->get(TabelaDeSimbolos,lexemas[i]);
 		
-		printf("|%2$*1$lu|%3$*1$s|%4$*1$s|%5$*1$p|\n", 
-				15, aux->linha, aux->tipo, aux->lexema, aux->valor);
+		fprintf(arq,"%d:  token: ID, lexema: %s, tipo: %s, valor: %d, line number: %lu\n",
+					i,
+					aux->lexema,
+					aux->tipo,
+					((aux->valor == NULL)?0:0),
+					aux->linha);
 	}
-	printf("+%1$s+%1$s+%1$s+%1$s+\n", linha);
+	fprintf(arq,"---------------------------------\n");
+	fclose(arq);
 }
