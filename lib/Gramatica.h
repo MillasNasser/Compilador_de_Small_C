@@ -5,6 +5,7 @@
     #include "lista.h"
     #include "ConjuntoFirst.h"
     #include "TabelaSimbolos.h"
+    #include "ASTNodes.h"
 
     extern Lista* tknVec;
     int index_entrada;
