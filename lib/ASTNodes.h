@@ -108,33 +108,33 @@
 	void addChild(ASTNode *dest, ASTNode *novo);
 
 /* Construtores */
-	ASTNode new_ASTNode(char nome[str_size], char tipo[str_size]);
+	ASTNode* new_ASTNode(char nome[str_size], char tipo[str_size]);
 
-	ASTBloco new_ASTBloco();
+	ASTBloco* new_ASTBloco();
 
-	Expr new_Expr(char nome[str_size]);
+	Expr* new_Expr(char nome[str_size]);
 
-	Idntf new_Idntf(Token *entry, char type[str_size]);
+	Idntf* new_Idntf(Token *entry);
 
-	Numero new_Numero(Token *entry, int type);
+	Numero* new_Numero(Token *entry, int type);
 
-	LogicalOp new_LogicalOp(char op[str_size], Expr *e1, Expr *e2);
+	LogicalOp* new_LogicalOp(char op[str_size], Expr *e1, Expr *e2);
 
-	RelOp new_RelOp(char op[str_size], Expr *e1, Expr *e2);
+	RelOp* new_RelOp(char op[str_size], Expr *e1, Expr *e2);
 
-	ArithOp new_ArithOp(char op[str_size], Expr *e1, Expr *e2);
+	ArithOp* new_ArithOp(char op[str_size], Expr *e1, Expr *e2);
 
-	Attr new_Attr(Idntf *id, Expr *e);
+	Attr* new_Attr(Idntf *id, Expr *e);
 
-	If new_If(Expr *cond, ASTNode *ifTrue, ASTNode *ifFalse);
+	If* new_If(Expr *cond, ASTNode *ifTrue, ASTNode *ifFalse);
 
-	While new_While(Expr *condicao, ASTNode *ifTrue);
+	While* new_While(Expr *condicao, ASTNode *ifTrue);
 
-	For new_For(Attr *init, Expr *cond, Attr *incr, ASTNode *ifTrue);
+	For* new_For(Attr *init, Expr *cond, Attr *incr, ASTNode *ifTrue);
 
-	Read new_Read(Idntf *id);
+	Read* new_Read(Idntf *id);
 
-	Print new_Print(Expr *saida);
+	Print* new_Print(Expr *saida);
 
 /* Destrutores */
 	int del_ASTNode(void* self);

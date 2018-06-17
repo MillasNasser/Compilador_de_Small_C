@@ -38,6 +38,9 @@ typedef struct s_Lista{
     void (*add)(struct s_Lista* self, void* dado, 
                 size_t size, int index);
 
+    void (*add_sort)(struct s_Lista* self, void* dado, 
+                size_t size, int (*less)(void*, void*));
+
     /*Remove no indice em relação ao inicio e final da 
     lista que é variavel
         0: inicio;

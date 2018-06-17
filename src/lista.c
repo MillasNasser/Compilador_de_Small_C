@@ -39,7 +39,7 @@ void lst_add(Lista* lista, void* dado, size_t size, int index){
 
 		/* Itera sobre os elementos até no anterior do index */
 		for(i=0; //Pega o primeiro elemento e define i=0
-			i < index-1; //Enquanto i não for o elemento anterior 
+			i < index; //Enquanto i não for o index do elemento
 			i++, element = lista->lista->prox //Pega o próximo elemento da lista
 		);
 
@@ -52,6 +52,27 @@ void lst_add(Lista* lista, void* dado, size_t size, int index){
 	}
 	/* Quando não for um valor de índice válido */
 	perror("Valor invalido de indice, favor inserir um valor correto\n");
+}
+
+void lst_add_sort(Lista* lista, void* dado, size_t size, int (*less)(void*, void*)){
+	int i;
+	No *element;
+	for(i = 0; i < lista->qnt; i++){
+		if(!less(dado, lista->get(lista,i)->valor)){
+			element = lista->get(lista,i-1);
+			No *novo = new_No(dado, size);
+			novo->prox = element->prox;
+			element->prox = novo;
+			lista->qnt++;
+			return;
+		}
+	}
+	if(i == 0){
+		lista->add(lista, dado, size,  0);
+	}else{ 
+		lista->add(lista, dado, size, -1);
+	}
+	return;
 }
 
 No* lst_pop(Lista* lista, int index){
@@ -105,9 +126,9 @@ int lst_busca(Lista* lista, void *item, size_t size, int (*dataEquals)(void*,voi
 	){
 		if(no_equals(chave, element,dataEquals)){
 			/* Liberando a chave criada para comparação */
-			if(chave->valor != element->valor){
-				free(chave->valor);
-			}
+			// if(chave->valor != element->valor){
+			// 	free(chave->valor);
+			// }
 			free(chave);
 			return i;
 		}
@@ -179,6 +200,7 @@ Lista* new_Lista(){
 	/*------ Metodos -------*/
 	nova->type = "Lista";
 	nova->add = lst_add;
+	nova->add_sort = lst_add_sort;
 	nova->pop = lst_pop;
 	nova->busca = lst_busca;
 	nova->get = lst_get;
