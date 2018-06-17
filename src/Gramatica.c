@@ -301,8 +301,8 @@ void AdicaoOpc (){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_AdicaoOpc),
 	 fst_size(FIRST_AdicaoOpc))){
 		OpAdicao();
-		Adicao();
-		RelacaoOpc();
+		Termo();
+		AdicaoOpc();
 	}
 }
 
@@ -342,6 +342,13 @@ void OpMult (){
 
 void Fator (){
 	if(match(ID)){
+		EntradaTabela *a = 
+		(EntradaTabela*)TabelaDeSimbolos
+				->get(TabelaDeSimbolos,
+				((Token*)tknVec
+				->get(tknVec,index_entrada-1)
+				->valor)->nome);
+		add_Tabela(a);
 		return;
 	}else if(match(INTEGER_CONST)){
 		return;

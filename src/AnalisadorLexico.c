@@ -53,6 +53,13 @@ void define_linhas_dos_tokens(buffer leitura){
 }
 
 /* ------------------------- Métodos Públicos ------------------------- */
+int AnLex_delWL(void *self){
+	Chave *this = (Chave*) self;
+	free(this->regex);
+	free(this->token);
+	return 1;
+}
+
 bool AnLex_addWL(const string regex, const string token){
 	if(regex[0] == EOF && strlen(regex) == 1);
 	Chave *new = malloc(sizeof(Chave));
@@ -135,7 +142,7 @@ AnalisadorLexico* new_AnalisadorLexico(string path){
 
 void del_AnalisadorLexico(AnalisadorLexico *this){
 	del_IO(this->io);
-	del_Lista(wordList);
-	del_Lista(tknVec);
+	del_Lista(wordList, del_Token);
+	del_Lista(tknVec, del_Token);
 	free(this);
 }

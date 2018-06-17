@@ -5,6 +5,7 @@
     #include <string.h>
     #include <regex.h>
 
+    #define build(dest, src) memcpy(dest,src,sizeof(*src))
     ///Tipo boolean definido
     typedef char bool;
     #define true 1

@@ -59,11 +59,14 @@ void fill_buffer(IO *io, buffer *buff){
     int sizeVec = ftell(io->sourceCode);
     rewind(io->sourceCode);
     
-    bufferRetorno = (string)calloc(sizeVec, sizeof(char));
+    bufferRetorno = (string)calloc(sizeVec, sizeof(char)+1);
     fread(bufferRetorno, sizeof(char), sizeVec, io->sourceCode);
 
     int i;
-    for(i = strlen(bufferRetorno)-1; bufferRetorno[i] =='\n'; i--);
+    for(i = strlen(bufferRetorno)-1; 
+    bufferRetorno!=NULL && bufferRetorno[i] =='\n'; 
+    i--);
+    
     bufferRetorno[i+1] = '\0';
     *buff = bufferRetorno;
 }

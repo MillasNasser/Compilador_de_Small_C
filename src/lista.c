@@ -1,117 +1,181 @@
 #include "lista.h"
 
 void lst_add(Lista* lista, void* dado, size_t size, int index){
-	//Se a lista estiver cheia
-	if(lista->qnt == lista->__tam_max){
-		lista->begin = 0;
-		lista->end = lista->__tam_max - 1;
-		lista->lista = realloc( lista->lista, sizeof(Lista)*
-								lista->__tam_max * 2 );		
-		lista->__tam_max *= 2;
+	if((lista->qnt == 0) ^ (lista->lista == NULL)){
+		perror("Incosistencia na lista, qnt difere do inicio da lista\n");
+		return;
 	}
 
-	//Se for necessario inserir no final
-	if(index == final || index == lista->qnt){
-		lista->end = d_add(lista->end,lista->__tam_max);
-		lista->lista[lista->end] = new_No(dado, size);
-	}else 
+	/* Se for o primeiro elemento da lista */
+	if( lista->qnt == 0 && /// A lista estiver vazia
+		lista->lista == NULL && /// O primeiro elemento for nulo
+		(index == inicio || index == final) /// E o índice for no inicio ou final	
+	){
+		lista->lista = lista->ultimo = new_No(dado,size);
+		lista->qnt++;
+		return;
+	}
 
-	//Se for inserir no inicio
+	/* Adição normal de um vértice*/
+	/* Quando inserir no final da lista*/
+	if(index == final){
+		No *novo = new_No(dado, size);
+		lista->ultimo = lista->ultimo->prox = novo;
+		lista->qnt++;
+		return;
+	}else
+	/* Quando inserir no início da lista */
 	if(index == inicio){
-		lista->begin =d_rem(lista->begin, lista->__tam_max);
-		lista->lista[lista->begin] = new_No(dado, size);
+		No *novo = new_No(dado, size);
+		novo->prox = lista->lista;
+		lista->lista = novo;
+		lista->qnt++;
+		return;
 	}else 
+	/* Quando inserir no meio da lista */
+	if(index > 0 && index < lista->qnt){
+		int i;
+		No *element = lista->lista;
 
-	//Se for inserir em uma posição central
-	/*Há a remoção do No na posição atual e é jogado para o
-	  final da lista, e o novo é inserido em seu lugar*/
-	if(index < lista->qnt && index > 0){
-		lista->end = d_add(lista->end, lista->__tam_max);
-		lista->lista[lista->end] = lista->lista[index];
-		lista->lista[index] = new_No(dado, size);
+		/* Itera sobre os elementos até no anterior do index */
+		for(i=0; //Pega o primeiro elemento e define i=0
+			i < index-1; //Enquanto i não for o elemento anterior 
+			i++, element = lista->lista->prox //Pega o próximo elemento da lista
+		);
+
+		/* Aqui já chegou no elemento anterior desejado */
+		No *novo = new_No(dado, size);
+		novo->prox = element->prox;
+		element->prox = novo;
+		lista->qnt++;
+		return;
 	}
-	lista->qnt++;
+	/* Quando não for um valor de índice válido */
+	perror("Valor invalido de indice, favor inserir um valor correto\n");
 }
 
-No lst_pop(Lista* lista, int index){
-	if(lista->qnt == 0){
-		return No_NULL;
+No* lst_pop(Lista* lista, int index){
+	if(index < final || index >= lista->qnt){
+		perror("Valor invalido de indice\n");
+		return 0;
 	}
 	lista->qnt--;
-	//Se remover no final
-	if(index == final || index == lista->qnt){
-		No retorno = lista->lista[lista->end];
-		lista->end = d_rem(lista->end, lista->__tam_max);
-		return retorno;
-	}else 
-	
-	//Se remover no inicio
+
+	int i;
+	No *element = lista->lista;
+	No *prox;
+
+	if(index == final) {
+		index = lista->qnt;}
+	else
 	if(index == inicio){
-		No retorno = lista->lista[lista->begin];
-		lista->begin =d_add(lista->begin, lista->__tam_max);
-		return retorno;
-	}else 
-	
-	//Se remover no centro
-	/*Há a remoção do No na posição atual e é jogado em seu
-	  lugar o No do final da lista*/
-	if(index < lista->qnt && index > 0){
-		No retorno = lista->lista[d_at(index+lista->begin, lista->__tam_max)];
-		lista->lista[d_at(index+lista->begin, lista->__tam_max)] = lista->lista[lista->end];
-		lista->end = d_rem(lista->end, lista->__tam_max);
-		return retorno;
+		prox = lista->lista;
+		lista->lista = lista->lista->prox;
+		prox->prox = NULL;
+		return prox;
 	}
-	lista->qnt++;
-	return No_NULL;
+	/* Itera sobre os elementos até no anterior do index */
+	for(i=0; //Pega o primeiro elemento e define i=0
+		i < index-1; //Enquanto i não for o elemento anterior 
+		i++, element = lista->lista->prox //Pega o próximo elemento da lista
+	);
+	prox = element->prox; //Pega o próximo elemento do que vai ser retirado
+
+	element->prox = prox->prox;
+	
+
+	return prox;
 }
 
-bool no_equals(No elem1, No elem2, int (*dataEquals)(void*,void*)){
-	if( elem1.size == elem2.size){
-		if(dataEquals(elem1.valor,elem2.valor)){
-			return true;
-		}else{
-			return false;
-		}
+int no_equals(No* elem1, No* elem2, int (*dataEquals)(void*,void*)){
+	if( elem1->size == elem2->size){
+		return dataEquals(elem1->valor,elem2->valor);
 	}
 	return false;
 }
 
 int lst_busca(Lista* lista, void *item, size_t size, int (*dataEquals)(void*,void*)){
+	No *chave = new_No(item,size);
 	int i;
-	for(i = 0; i < lista->qnt; i++){
-		if(no_equals(*(lista->get(lista,i)), new_No(item, size), dataEquals)){
+	No *element = lista->lista;
+	/* Itera sobre os elementos até no anterior do index */
+	for(i = 0, element = lista->lista; //Pega o primeiro elemento da lista
+		element != NULL; //Enquanto i não for o elemento anterior 
+		i++, element = element->prox //Pega o próximo elemento da lista
+	){
+		if(no_equals(chave, element,dataEquals)){
+			/* Liberando a chave criada para comparação */
+			if(chave->valor != element->valor){
+				free(chave->valor);
+			}
+			free(chave);
 			return i;
 		}
 	}
+
 	return -1;
 }
 
 No* lst_get(Lista* lista, int index){
-	if(index >= lista->qnt)
+	if(index < final || index >= lista->qnt){
 		return NULL;
+	}
+	if(index == final){ index = lista->qnt-1; }
+	No *element;
+	/* Itera sobre os elementos até no anterior do index */
+	for(element = lista->lista; //Pega o primeiro elemento da lista
+		index > 0; //Enquanto i não for o elemento anterior 
+		index--, element = element->prox //Pega o próximo elemento da lista
+	);
 
-	return &lista->lista[
-			d_at(lista->begin + index, lista->__tam_max)
-		];
+	return element;
 }
 
 bool lst_existe(Lista* lista, void *item, size_t size, int (*dataEquals)(void*,void*)){
-	if(lst_busca(lista, item, size, dataEquals) >= 0)
+	if(lst_busca(lista,item,size,dataEquals) != -1){
 		return true;
+	}
 	return false;
 }
+
+void lprintf(Lista *lista){
+	int i;
+	No* elemnt = lista->lista;
+	for(i = 0; i < lista->qnt; i++, elemnt = elemnt->prox){
+		printf("[%d]<[%lu] [%d]>\n",
+			i, elemnt->size, *(int*)elemnt->valor);
+	}
+}
+
 /*---------------------------------------*/
-void del_Lista(Lista* lista){
-	free(lista->lista);
-	free(lista);
+void del_Lista(Lista* lista, int dataDel(void *)){
+	/* Se não houver ninguém na lista */
+	if(lista->lista == NULL){
+		free(lista);
+		return;
+	}
+
+	int i = 0;
+	No *elemnt = lista->lista;
+	No *next;
+	for(i = 0; i < lista->qnt; i++, elemnt = next){
+		next = elemnt->prox;
+		if(!dataDel(elemnt->valor)) exit(-1);
+		elemnt->prox = NULL;
+		free(elemnt);
+	}
+	if(next == NULL){
+		free(lista);
+		return;
+	}
+	perror("Erro: Vetor inconsistente");
 }
 
 /*Tamanho inicial da lista é sempre lista_size*/
 Lista* new_Lista(){
 	Lista* nova = malloc(sizeof(Lista));
-	nova->begin = nova->end = 0;
-	nova->lista = calloc(lista_size,sizeof(No));
-	nova->__tam_max = lista_size;
+	nova->qnt = 0;
+	nova->lista = nova->ultimo = NULL;
 	/*------ Metodos -------*/
 	nova->type = "Lista";
 	nova->add = lst_add;
@@ -122,7 +186,11 @@ Lista* new_Lista(){
 	return nova;
 }
 
-No new_No(void* data, size_t size){
-	No novo = (No){size,data,no_equals};
+No* new_No(void* data, size_t size){
+	No *novo = (No*)malloc(sizeof(No));
+	novo->size = size;
+	novo->valor = data;
+	novo->equals = no_equals;
+	novo->prox = NULL;
 	return novo;
 }
