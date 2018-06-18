@@ -1,6 +1,14 @@
 #include "AnalisadorSintatico.h"
 
 int main(int argc, char *argv[]){
+    strcpy(simbolTable,"symboltable.txt");
+    strcpy(arvAbstr ,"abstractTree.txt");
+    if(argc > 2){
+        strcpy(simbolTable, argv[2]);
+    }
+    if(argc > 3){
+        strcpy(arvAbstr, argv[3]);
+    }
     AnalisadorSintatico *novo = new_AnalisadorSintatico();
     novo->start(argv[1]);
     return 0;

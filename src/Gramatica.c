@@ -57,8 +57,9 @@ bool Programa (){
 	ASTNode *arv = new_ASTNode("ASTNode","ASTNode");
 	Decl_Comando(arv);
 	if(!match(RBRACE)) errSynt(RBRACE);
-
-	arv->print(stdout, arv);
+	FILE *arq = fopen(arvAbstr,"w");
+	arv->print(arq, arv);
+	fclose(arq);
 	arv->del(arv);
 	return true;
 }

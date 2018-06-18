@@ -15,6 +15,10 @@
     typedef char* string;
     #define str_size 30 //Tamanho padrão
 
+    ///Nome padrao dos arquivos
+    char simbolTable[200];// = "symboltable.txt";
+	char arvAbstr[200];// = "abstractTree.txt";
+
     ///Inclusão da biblioteca de funções e estruturas úteis
     #include "utils.h"
 #endif //__HEADER_H
