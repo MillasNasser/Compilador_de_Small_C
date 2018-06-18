@@ -19,7 +19,7 @@ bool match(string token){
 	return false;
 }
 
-bool add_TabelaDeSimbolos(string tipo){
+bool add_TabelaDeSimbolos(ASTNode *arv,string tipo){
 	/* Adicionando na tabela de simbolos */
 	index_entrada--;
 	Token *tokenEntrada = (Token*)tknVec->get(tknVec,index_entrada)->valor;
@@ -30,6 +30,12 @@ bool add_TabelaDeSimbolos(string tipo){
 		tipo,
 		NULL
 	));
+
+	/*Idntf *id = new_Idntf(
+		(Token*)tknVec->get(tknVec,index_entrada)->valor
+	);
+
+	addChild(arv, (ASTNode*)id);*/
 	index_entrada++;
 
 	return adicionou;
@@ -48,51 +54,62 @@ bool Programa (){
 	if(!match(LBRACKET)) errSynt(LBRACKET);
 	if(!match(RBRACKET)) errSynt(RBRACKET);
 	if(!match(LBRACE)) errSynt(LBRACE);
-	Decl_Comando();
+	ASTNode *arv = new_ASTNode("ASTNode","ASTNode");
+	Decl_Comando(arv);
 	if(!match(RBRACE)) errSynt(RBRACE);
+	FILE *arq = fopen(arvAbstr,"w");
+	arv->print(arq, arv);
+	fclose(arq);
+	arv->del(arv);
 	return true;
 }
 
-void Decl_Comando (){
+void Decl_Comando (ASTNode *arv){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_Declaracao), 
 	 fst_size(FIRST_Declaracao))){
-		Declaracao();
-		Decl_Comando();
+		Declaracao(arv);
+		Decl_Comando(arv);
 	}else
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_Comando), 
 	 fst_size(FIRST_Comando))){
-		Comando();
-		Decl_Comando();
+		ASTNode *aux = Comando();
+		addChild(arv, aux);
+		Decl_Comando(arv);
 	}
 }
 
-void Declaracao (){
+void Declaracao (ASTNode *arv){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_Tipo), 
 	 fst_size(FIRST_Tipo))){
 		string tipo = Tipo();
 		if(!match(ID)) errSynt(ID);
 
-		add_TabelaDeSimbolos(tipo);
+		add_TabelaDeSimbolos(arv, tipo);
 
-		Decl2(tipo);
+		Decl2(arv, tipo);
 		return;
 	}
 	errSynt(fst_toMtrx(FIRST_Declaracao)[0]);
 }
 
-void Decl2 (string tipo){
+void Decl2 (ASTNode *arv, string tipo){
 	if(match(COMMA)){
 		if(!match(ID)) errSynt(ID);
 
-		add_TabelaDeSimbolos(tipo);
+		add_TabelaDeSimbolos(arv,tipo);
 		
-		Decl2(tipo);
+		Decl2(arv, tipo);
 		return;
 	}else if(match(PCOMMA)){
 		return;
 	}else if(match(ATTR)){
-		Expressao();
-		Decl2(tipo);
+		Idntf *id = new_Idntf(
+			(Token*)tknVec->get(tknVec,index_entrada-2)->valor
+		);
+		Expr *expr = Expressao();
+		Attr *attr = new_Attr(id,expr);
+		addChild(arv, (ASTNode*) attr);
+		Decl2(arv, tipo);
 		return;
 	}
 	errSynt(fst_toMtrx(FIRST_Decl2)[0]);
@@ -108,249 +125,299 @@ string Tipo (){
 	errSynt(fst_toMtrx(FIRST_Tipo)[0]);
 }
 
-void Comando (){
+ASTNode* Comando (){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_Bloco), 
 	 fst_size(FIRST_Bloco))){
-		Bloco();
-		return;
+		return Bloco();
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_Atribuicao), 
 	 fst_size(FIRST_Atribuicao))){
-		Atribuicao();
-		return;
+		return Atribuicao();
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_ComandoSe), 
 	 fst_size(FIRST_ComandoSe))){
-		ComandoSe();
-		return;
+		return ComandoSe();
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_ComandoEnquanto), 
 	 fst_size(FIRST_ComandoEnquanto))){
-		ComandoEnquanto();
-		return;
+		return ComandoEnquanto();
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_ComandoRead), 
 	 fst_size(FIRST_ComandoRead))){
-		ComandoRead();
-		return;
+		return ComandoRead();
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_ComandoPrint), 
 	 fst_size(FIRST_ComandoPrint))){
-		ComandoPrint();
-		return;
+		return ComandoPrint();
 	}else 
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_ComandoFor), 
 	 fst_size(FIRST_ComandoFor))){
-		ComandoFor();
-		return;
+		return ComandoFor();
 	}
 	
 	errSynt(fst_toMtrx(FIRST_Comando)[0]);
 }
 
-void Bloco (){
+ASTNode* Bloco (){
+	ASTBloco *bloco = new_ASTBloco();
 	if(!match(LBRACE)) errSynt(LBRACE);
-	Decl_Comando();
+	Decl_Comando(bloco);
 	if(!match(RBRACE)) errSynt(RBRACE);
+	return bloco;
 }
 
-void Atribuicao (){
+ASTNode* Atribuicao (){
 	if(!match(ID)) errSynt(ID);
+	Idntf *id = new_Idntf(
+		(Token*)tknVec->get(tknVec,index_entrada-1)->valor
+	);
 	if(!match(ATTR)) errSynt(ATTR);
-	Expressao();
+	Expr *expr = Expressao();
 	if(!match(PCOMMA)) errSynt(PCOMMA);
+
+	Attr *atrib = new_Attr(id,expr);
+	return (ASTNode*)atrib;
 }
 
-void ComandoSe (){
+ASTNode* ComandoSe (){
 	if(!match(IF)) errSynt(IF);
 	if(!match(LBRACKET)) errSynt(LBRACKET);
-	Expressao();
+	Expr *expr = Expressao();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
-	Comando();
-	ComandoSenao();
+
+	ASTNode *ifTrue = Comando();
+	ASTNode *ifFalse = ComandoSenao();
+
+	If *s_if = new_If(expr,ifTrue,ifFalse);
+	return (ASTNode*)s_if;
 }
 
-void ComandoSenao (){
+ASTNode* ComandoSenao (){
 	if(match(ELSE)){
-		Comando();
+		return Comando();
 	}
+	return NULL;
 }
 
-void ComandoEnquanto (){
+ASTNode* ComandoEnquanto (){
 	if(!match(WHILE)) errSynt(WHILE);
 	if(!match(LBRACKET)) errSynt(LBRACKET);
-	Expressao();
+	Expr *expr = Expressao();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
-	Comando();
+	
+	ASTBloco *ifTrue = Comando();
+
+	While *s_while = new_While(expr,ifTrue);
+	return (ASTNode*)s_while;
 }
 
-void ComandoRead (){
+ASTNode* ComandoRead (){
 	if(!match(READ)) errSynt(READ);
 	if(!match(ID)) errSynt(ID);
+	Idntf *id = new_Idntf(
+		(Token*)tknVec->get(tknVec,index_entrada-1)->valor
+	);
 	if(!match(PCOMMA)) errSynt(PCOMMA);
+
+	Read *read = new_Read(id);
+	return (ASTNode*)read;
 }
 
-void ComandoPrint (){
+ASTNode* ComandoPrint (){
 	if(!match(PRINT)) errSynt(PRINT);
 	if(!match(LBRACKET)) errSynt(LBRACKET);
-	Expressao();
+	Expr *expr = Expressao();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
 	if(!match(PCOMMA)) errSynt(PCOMMA);
+	Print *pr = new_Print(expr);
+	return (ASTNode*)pr;
 }
 
-void ComandoFor(){
+ASTNode* ComandoFor(){
 	if(!match(FOR)) errSynt(FOR);
 	if(!match(LBRACKET)) errSynt(LBRACKET);
-	AtribuicaoFor();
+	Attr *init = AtribuicaoFor();
 	if(!match(PCOMMA)) errSynt(PCOMMA);
-	Expressao();
+	Expr *expr = Expressao();
 	if(!match(PCOMMA)) errSynt(PCOMMA);
-	AtribuicaoFor();
+	Attr *incrmnt = AtribuicaoFor();
 	if(!match(RBRACKET)) errSynt(RBRACKET);
-	Comando();
+	ASTNode *ifTrue = NULL;
+	ifTrue = Comando(ifTrue);
+	
+	For*s_for=new_For(init,expr,incrmnt,ifTrue);
+	return (ASTNode*)s_for;
 }
 
-void AtribuicaoFor(){
+Attr* AtribuicaoFor(){
 	if(!match(ID)) errSynt(ID);
+	Idntf *id = new_Idntf(
+		(Token*)tknVec->get(tknVec,index_entrada-1)->valor
+	);
 	if(!match(ATTR)) errSynt(ATTR);
-	Expressao();
+	Expr *expr = Expressao();
+	return new_Attr(id, expr);
 }
 
-void Expressao (){
-	Conjuncao();
-	ExpressaoOpc();
+Expr* Expressao (){
+	Expr *op1 = Conjuncao();
+	return ExpressaoOpc(op1);
 }
 
-void ExpressaoOpc (){
+Expr* ExpressaoOpc (Expr *op1){
 	if(match(OR)){
-		Conjuncao();
-		ExpressaoOpc();
+		Expr *op2 = Conjuncao();
+		op2 = ExpressaoOpc(op2);
+		return (Expr *)new_LogicalOp("||", op1, op2);
 	}
+	return op1;
 }
 
-void Conjuncao(){
-	Igualdade();
-	ConjuncaoOpc();
+Expr* Conjuncao(){
+	Expr *op1 = Igualdade();
+	return ConjuncaoOpc(op1);
 }
 
-void ConjuncaoOpc (){
+Expr* ConjuncaoOpc (Expr *op1){
 	if(match(AND)){
-		Igualdade();
-		ConjuncaoOpc();
+		Expr *op2 = Igualdade();
+		op2 = ConjuncaoOpc(op2);
+		return (Expr *)new_LogicalOp("&&", op1, op2);
 	}
+	return op1;
 }
 
-void Igualdade (){
-	Relacao();
-	IgualdadeOpc();
+Expr* Igualdade (){
+	Expr *op1 = Relacao();
+	return IgualdadeOpc(op1);
 }
 
-void IgualdadeOpc(){
+Expr* IgualdadeOpc(Expr *op1){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_IgualdadeOpc),
 	 fst_size(FIRST_IgualdadeOpc))){    
-		OpIgual();
-		Relacao();
-		IgualdadeOpc();
+		string op = OpIgual();
+		Expr *op2 = Relacao();
+		op2 = IgualdadeOpc(op2);
+		return (Expr *)new_RelOp(op, op1, op2);
 	}
+	return op1;
 }
 
-void OpIgual (){
+string OpIgual (){
 	if(match(EQ)){
-		return;
+		return "==";
 	}else if(match(NE)){
-		return;
+		return "!=";
 	}
 
 	errSynt(fst_toMtrx(FIRST_OplIgual)[0]);
 }
 
-void Relacao (){
-	Adicao();
-	RelacaoOpc();
+Expr* Relacao (){
+	Expr *op1 = Adicao();
+	return RelacaoOpc(op1);
 }
 
-void RelacaoOpc (){
+Expr* RelacaoOpc (Expr *op1){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_RelacaoOpc),
 	 fst_size(FIRST_RelacaoOpc))){
-		OpRel();
-		Adicao();
-		RelacaoOpc();
+		string op = OpRel();
+		Expr *op2 = Adicao();
+		op2 = RelacaoOpc(op2);
+		return (Expr *)new_RelOp(op, op1, op2);
 	}
+	return op1;
 }
 
-void OpRel (){
+string OpRel (){
 	if(match(LT)){
-		return;
+		return "<";
 	}else if(match(LE)){
-		return;
+		return "<=";
 	}else if(match(GT)){
-		return;
+		return ">";
 	}else if(match(GE)){
-		return;
+		return ">=";
 	}
 
 	errSynt(fst_toMtrx(FIRST_OpRel)[0]);
 }
 
-void Adicao (){
-	Termo();
-	AdicaoOpc();
+Expr* Adicao (){
+	Expr *op1 = Termo();
+	return AdicaoOpc(op1);
 }
 
-void AdicaoOpc (){
+Expr* AdicaoOpc (Expr *op1){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_AdicaoOpc),
 	 fst_size(FIRST_AdicaoOpc))){
-		OpAdicao();
-		Adicao();
-		RelacaoOpc();
+		string op = OpAdicao();
+		Expr *op2 = Termo();
+		op2 = AdicaoOpc(op2);
+		return (Expr *)new_ArithOp(op, op1, op2);
 	}
+	return op1;
 }
 
-void OpAdicao (){
+string OpAdicao (){
 	if(match(PLUS)){
-		return;
+		return  "+";
 	}else if(match(MINUS)){
-		return;
+		return  "-";
 	}
 
 	errSynt(fst_toMtrx(FIRST_OpAdicao)[0]);
 }
 
-void Termo (){
-	Fator();
-	TermoOpc();
+Expr* Termo (){
+	Expr *op1 = Fator();
+	return TermoOpc(op1);
 }
 
-void TermoOpc (){
+Expr* TermoOpc (Expr *op1){
 	if(inFirst(getInLex(),fst_toMtrx(FIRST_TermoOpc),
 	 fst_size(FIRST_TermoOpc))){
-		OpMult();
-		Fator();
-		TermoOpc();
+		string op = OpMult();
+		Expr *op2 = Fator();
+		op2 = TermoOpc(op2);
+
+		return (Expr *)new_ArithOp(op, op1, op2);
 	}
+	return op1;
 }
 
-void OpMult (){
+string OpMult (){
 	if(match(MULT)){
-		return;
+		return "*";
 	}else if(match(DIV)){
-		return;
+		return "/";
 	}
 
 	errSynt(fst_toMtrx(FIRST_OpMult)[0]);
 }
 
-void Fator (){
+Expr* Fator (){
 	if(match(ID)){
-		return;
+		Idntf *id = new_Idntf(
+			(Token*)tknVec->get(tknVec,index_entrada-1)->valor
+		);
+		return (Expr*)id;
 	}else if(match(INTEGER_CONST)){
-		return;
+		Numero *num = new_Numero(
+			(Token*)tknVec->get(tknVec,index_entrada-1)->valor,
+			tINT
+		);
+		return (Expr*)num;
 	}else if(match(FLOAT_CONST)){
-		return;
+		Numero *num = new_Numero(
+			(Token*)tknVec->get(tknVec,index_entrada-1)->valor,
+			tFLOAT
+		);
+		return (Expr*)num;
 	}else if(match(LBRACKET)){
-		Expressao();
+		Expr *expr = Expressao();
 		if(!match(RBRACKET)) errSynt(RBRACKET);
-		return;
+		return expr;
 	}
 
 	printf("%s\n", getInLex());

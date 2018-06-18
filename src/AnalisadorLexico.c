@@ -4,26 +4,12 @@
 #define REG_MATCH 0
 
 /* ------------------------- Métodos Privados ------------------------- */
-int TokenEquals(void *elem1,void *elem2){
-	Token *src1 = (Token*)elem1;
-	Token *src2 = (Token*)elem2;
-	
-	return src1->linha - src2->linha;
-}
 
-static int qsort_TknEquals(const void *src1, const void *src2){
-	No *elem1 = (No*)src1; No *elem2 = (No*)src2;
-	if(elem1->size < elem2->size){
-		return -1;
-	}else if(elem1->size > elem2->size){
+int tknMenor(void *elem1, void *elem2){
+	Token *tk1 = (Token*)elem1;
+	Token *tk2 = (Token*)elem2;
+	if(tk1->linha > tk2->linha){
 		return 1;
-	}else{
-		int result = TokenEquals(elem1->valor,elem2->valor);
-		if(result > 0){
-			return 1;
-		}else if(result < 0){
-			return -1;
-		}
 	}
 	return 0;
 }
@@ -53,6 +39,10 @@ void define_linhas_dos_tokens(buffer leitura){
 }
 
 /* ------------------------- Métodos Públicos ------------------------- */
+int AnLex_delWL(void *self){
+	return 1;
+}
+
 bool AnLex_addWL(const string regex, const string token){
 	if(regex[0] == EOF && strlen(regex) == 1);
 	Chave *new = malloc(sizeof(Chave));
@@ -110,15 +100,12 @@ void AnLex_start(struct s_AnalsdrLex *this){
 			Token *new = new_Token(word,analisar->token,
 					  (descrtr+match[0].rm_so)-leitura);
 			descrtr += match[0].rm_eo;
-			tknVec->add(tknVec,new,sizeof(Token),final);
+			tknVec->add_sort(tknVec,new,sizeof(Token),tknMenor);
 		}
 		regfree(&regex);
 	}
 	
-	qsort(tknVec->get(tknVec,0),tknVec->qnt,sizeof(No), qsort_TknEquals);
-	
 	define_linhas_dos_tokens(leitura);
-
 	free(leitura);
 }
 
@@ -135,7 +122,7 @@ AnalisadorLexico* new_AnalisadorLexico(string path){
 
 void del_AnalisadorLexico(AnalisadorLexico *this){
 	del_IO(this->io);
-	del_Lista(wordList);
-	del_Lista(tknVec);
+	del_Lista(wordList, AnLex_delWL);
+	del_Lista(tknVec, del_Token);
 	free(this);
 }

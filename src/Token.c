@@ -8,10 +8,14 @@ bool Token_equals(Token *elem1, Token *elem2){
     return false;
 }
 
-Token* new_Token(const string nome, char *lexema, unsigned long int linha){
+Token* new_Token(const char nome[str_size], char *lexema, unsigned long int linha){
     Token *new = malloc(sizeof(Token));
-    new->nome = nome;
+    strcpy(new->nome, nome);
     new->linha= linha;
-    new->lexema = lexema;
+    strcpy(new->lexema, lexema);
     return new;
+}
+
+int del_Token(void* self){
+    return 1;
 }

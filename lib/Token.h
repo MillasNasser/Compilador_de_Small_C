@@ -3,14 +3,15 @@
 	#include "HeaderPadrao.h"
 
 	typedef struct {
-		string nome;
-		string lexema;
+		char nome[str_size];
+		char lexema[str_size];
 		unsigned long int linha;
 	} Token;
 
 	bool Token_equals(Token *elem1, Token *elem2);
 
-	Token* new_Token(const string nome, char *lexema, unsigned long int linha);
+	Token* new_Token(const char nome[str_size], char *lexema, unsigned long int linha);
+	int del_Token(void* self);
 
 	/* Tokens da Linguagem */
 	#define MAIN "MAIN"

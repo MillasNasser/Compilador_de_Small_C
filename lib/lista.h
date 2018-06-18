@@ -2,16 +2,6 @@
 #define __LISTA_h
     #include "HeaderPadrao.h"
 //----------------------------------------------------------
-#define lista_size 1 //Numero inicial de elementos na lista
-
-//Acessa o elemento atual
-#define d_at(a, val) ((a) % val)
-
-//Acessa o proximo elemento
-#define d_add(a, val) ((a + 1) % val)
-
-//Acessa o elemento anterior
-#define d_rem(a, val) ((a - 1 < 0)? val-1: a-1)
 
 /*Em relação a posição da lista*/
 #define inicio 0
@@ -21,23 +11,21 @@
 typedef struct s_No{
     size_t size; //Tamanho em bytes do dado
     void *valor; //Dado armazenado
+    struct s_No *prox; //Ponteiro para o próximo elemento
 
     /*Verifica se o valor de dois No's são iguais*/
     /*Necessita de uma função que verifica se os dados são 
       iguais*/
-    bool (*equals)( struct s_No self, struct s_No element, 
+    int (*equals)( struct s_No* self, struct s_No* element, 
                     int (*dataEquals)(void*,void*));
 }No;
-#define No_NULL (No){0,NULL,NULL}//Definição de NULL para No
 
 /* Descritor da LISTA*/
 typedef struct s_Lista{
     const char* type;
-    int __tam_max; //Armazena o tamanho maximo da lista
     int qnt; //Armazena a quantidade atual da lista
-    int begin; //Aponta para o inicio da lista
-    int end; //Aponta para o final da lista
-    No *lista;
+    No *lista; //Aponta para o primeiro elemento da lista
+    No *ultimo;
     
     /*Adiciona no seguinte index,
         0: inicio;
@@ -50,6 +38,9 @@ typedef struct s_Lista{
     void (*add)(struct s_Lista* self, void* dado, 
                 size_t size, int index);
 
+    void (*add_sort)(struct s_Lista* self, void* dado, 
+                size_t size, int (*less)(void*, void*));
+
     /*Remove no indice em relação ao inicio e final da 
     lista que é variavel
         0: inicio;
@@ -59,7 +50,7 @@ typedef struct s_Lista{
     ___ Valores que são removidos em index diferentes 
         de 0, -1 ou tam alteram
         o inicio ou final da lista*/
-    No (*pop)(struct s_Lista* self, int index);
+    No* (*pop)(struct s_Lista* self, int index);
 
     /*Busca um item na lista, o primeiro valor encontrado 
     é retornado o seu index
@@ -79,9 +70,11 @@ typedef struct s_Lista{
 /*Faz a inicialização da lista*/
 Lista* new_Lista();
 
+void lprintf(Lista *lista);
+
 /*Faz a inicialização do No*/
-No new_No(void* data, size_t size);
+No* new_No(void* data, size_t size);
 
 /*Deleta todos os elementos e destroi a lista*/
-void del_Lista(Lista* lista);
+void del_Lista(Lista* lista, int dataDel(void *));
 #endif //__LISTA_h
