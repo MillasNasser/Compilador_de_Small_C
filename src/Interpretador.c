@@ -40,10 +40,22 @@ float Intpr_LogicalOp(FILE *arq, ASTNode *self){
 	LogicalOp *this = (LogicalOp*) self;
 
 	/* Recebendo os operandos da operação */
-	float v1 = ((ASTNode*)&this->e1)
-				->interpret(arq, (ASTNode*)&this->e1);
-	float v2 = ((ASTNode*)&this->e2)
-				->interpret(arq, (ASTNode*)&this->e2);
+	Expr *expr1 = (Expr*)((ASTNode*)this)
+					->filhos->get(
+						((ASTNode*)this)->filhos,
+						0
+					)->valor;
+
+	Expr *expr2 = (Expr*)((ASTNode*)this)
+					->filhos->get(
+						((ASTNode*)this)->filhos,
+						1
+					)->valor;
+					
+	float v1 = ((ASTNode*)expr1)
+				->interpret(arq, (ASTNode*)expr1);
+	float v2 = ((ASTNode*)expr2)
+				->interpret(arq, (ASTNode*)expr2);
 
 	/* Caso um dos operandos não for inicializado */
 	if(v1 == NAN || v2 == NAN){
@@ -53,9 +65,9 @@ float Intpr_LogicalOp(FILE *arq, ASTNode *self){
 	}
 
 	/* Definindo as operações */
-	if(strcmp("||",this->super.op)){
+	if(strcmp("||",this->super.op) == 0){
 		return v1 || v2;
-	}else if(strcmp("&&",this->super.op)){
+	}else if(strcmp("&&",this->super.op) == 0){
 		return v1 && v2;
 	}
 
@@ -69,10 +81,22 @@ float Intpr_RelOp(FILE *arq, ASTNode *self){
 	RelOp *this = (RelOp*) self;
 
 	/* Recebendo os operandos da operação */
-	float v1 = ((ASTNode*)&this->e1)
-				->interpret(arq, (ASTNode*)&this->e1);
-	float v2 = ((ASTNode*)&this->e2)
-				->interpret(arq, (ASTNode*)&this->e2);
+	Expr *expr1 = (Expr*)((ASTNode*)this)
+					->filhos->get(
+						((ASTNode*)this)->filhos,
+						0
+					)->valor;
+
+	Expr *expr2 = (Expr*)((ASTNode*)this)
+					->filhos->get(
+						((ASTNode*)this)->filhos,
+						1
+					)->valor;
+					
+	float v1 = ((ASTNode*)expr1)
+				->interpret(arq, (ASTNode*)expr1);
+	float v2 = ((ASTNode*)expr2)
+				->interpret(arq, (ASTNode*)expr2);
 
 	/* Caso um dos operandos não for inicializado */
 	if(v1 == NAN || v2 == NAN){
@@ -82,17 +106,17 @@ float Intpr_RelOp(FILE *arq, ASTNode *self){
 	}
 
 	/* Definindo as operações */
-	if(strcmp("==",this->super.op)){
+	if(strcmp("==",this->super.op) == 0){
 		return v1 == v2;
-	}else if(strcmp("!=",this->super.op)){
+	}else if(strcmp("!=",this->super.op) == 0){
 		return v1 != v2;
-	}else if(strcmp("<",this->super.op)){
+	}else if(strcmp("<",this->super.op) == 0){
 		return v1 < v2;
-	}else if(strcmp("<=",this->super.op)){
+	}else if(strcmp("<=",this->super.op) == 0){
 		return v1 <= v2;
-	}else if(strcmp(">",this->super.op)){
+	}else if(strcmp(">",this->super.op) == 0){
 		return v1 > v2;
-	}else if(strcmp(">=",this->super.op)){
+	}else if(strcmp(">=",this->super.op) == 0){
 		return v1 >= v2;
 	}
 
@@ -106,10 +130,22 @@ float Intpr_ArithOp(FILE *arq, ASTNode *self){
 	ArithOp *this = (ArithOp*) self;
 
 	/* Recebendo os operandos da operação */
-	float v1 = ((ASTNode*)&this->e1)
-				->interpret(arq, (ASTNode*)&this->e1);
-	float v2 = ((ASTNode*)&this->e2)
-				->interpret(arq, (ASTNode*)&this->e2);
+	Expr *expr1 = (Expr*)((ASTNode*)this)
+					->filhos->get(
+						((ASTNode*)this)->filhos,
+						0
+					)->valor;
+
+	Expr *expr2 = (Expr*)((ASTNode*)this)
+					->filhos->get(
+						((ASTNode*)this)->filhos,
+						1
+					)->valor;
+					
+	float v1 = ((ASTNode*)expr1)
+				->interpret(arq, (ASTNode*)expr1);
+	float v2 = ((ASTNode*)expr2)
+				->interpret(arq, (ASTNode*)expr2);
 
 	/* Caso um dos operandos não for inicializado */
 	if(v1 == NAN || v2 == NAN){
@@ -119,13 +155,13 @@ float Intpr_ArithOp(FILE *arq, ASTNode *self){
 	}
 
 	/* Definindo as operações */
-	if(strcmp("+",this->super.op)){
+	if(strcmp("+",this->super.op) == 0){
 		return v1 + v2;
-	}else if(strcmp("-",this->super.op)){
+	}else if(strcmp("-",this->super.op) == 0){
 		return v1 - v2;
-	}else if(strcmp("*",this->super.op)){
+	}else if(strcmp("*",this->super.op) == 0){
 		return v1 * v2;
-	}else if(strcmp("/",this->super.op)){
+	}else if(strcmp("/",this->super.op) == 0){
 		if(v2 == 0){
 			fprintf(stdout, "Erro: divisao por 0\n");
 			exit(3);
@@ -168,7 +204,11 @@ float Intpr_If(FILE *arq, ASTNode *self){
 	If *this = (If*) self;
 
 	/* Pegando a expressão da condição */
-	Expr *expr = (Expr*) &(this->condicao);
+		Expr *expr = (Expr*)((ASTNode*)this)
+					->filhos->get(
+						((ASTNode*)this)->filhos,
+						0
+					)->valor;
 
 	/* Recebendo o valor da expressão */
 	float valor = ((ASTNode*)expr)->interpret(arq,
@@ -236,7 +276,7 @@ float Intpr_Read(FILE *arq, ASTNode *self){
 }
 
 float Intpr_Print(FILE *arq, ASTNode *self){
-	Print *this = (Print*) self;
+	//Print *this = (Print*) self;
 
 	/* Pegando a expressão da condição */
 	Expr *expr = (Expr*) self->filhos->get(self->filhos, 0)->valor;
