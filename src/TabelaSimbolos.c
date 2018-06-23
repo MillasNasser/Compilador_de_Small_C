@@ -12,7 +12,7 @@ void new_Tabela(){
 }
 
 EntradaTabela* new_EntradaTabela( unsigned long int linha, string lexema, 
-								string tipo, void*valor){
+								string tipo, float valor){
 	EntradaTabela *new = malloc(sizeof(EntradaTabela));
 	new->valor = valor;
 	new->tipo = tipo;
@@ -23,7 +23,7 @@ EntradaTabela* new_EntradaTabela( unsigned long int linha, string lexema,
 
 int add_Tabela(EntradaTabela *in){
 	if(TabelaDeSimbolos->get(TabelaDeSimbolos,in->lexema) != NULL){
-		printf("Variavel já criada: redefinição de %s na linha %lu\n", in->lexema, in->linha);
+		fprintf(logErro, "Erro variavel já criada: redefinição de %s na linha %lu\n", in->lexema, in->linha);
 		return 0;
 	}
 
@@ -43,7 +43,7 @@ void print_Tabela(){
 					i,
 					aux->lexema,
 					aux->tipo,
-					((aux->valor == NULL)?0:0),
+					((aux->valor == NAN)?0:0),
 					aux->linha);
 	}
 	fprintf(arq,"---------------------------------\n");

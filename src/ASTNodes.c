@@ -11,7 +11,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		strcpy(novo->tipo, tipo);
 		novo->filhos = new_Lista();
 		
-		novo->print = print_ASTNode;
+		novo->print = XML_print_ASTNode;
+		novo->interpret = Intpr_ASTNode;
 		novo->del = del_ASTNode;
 		return novo;
 	}
@@ -20,7 +21,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		ASTBloco *novo = new_ASTNode("ASTBloco","ASTNode");
 		strcpy(novo->nome, "BLOCO");
 
-		novo->print = print_ASTBloco;
+		novo->print = XML_print_ASTBloco;
+		novo->interpret = Intpr_ASTBloco;
 		novo->del = del_ASTBloco;
 		return novo;
 	}
@@ -32,7 +34,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		free(super);
 		strcpy(novo->op,"");
 		
-		novo->super.print = print_Expr;
+		novo->super.print = XML_print_Expr;
+		novo->super.interpret = Intpr_Expr;
 		novo->super.del = del_Expr;
 		return novo;
 	}
@@ -46,11 +49,12 @@ void addChild(ASTNode *dest, ASTNode *novo){
 			(EntradaTabela*)TabelaDeSimbolos
 			->get(TabelaDeSimbolos,tkn->nome);
 		if(entry == NULL){
-			printf("Variavel '%s' nao declarada. Linha %lu\n", 
+			fprintf(logErro, "Erro Variavel '%s' nao declarada. Linha %lu\n", 
 				tkn->nome, tkn->linha);
 			
 			strcpy((*(ASTNode*)novo).nome,"Idntf_NULL");
-			(*(ASTNode*)novo).print = print_Idntf;
+			(*(ASTNode*)novo).print = XML_print_Idntf;
+			(*(ASTNode*)novo).interpret = Intpr_Idntf;
 			(*(ASTNode*)novo).del = del_Idntf;
 			return novo;
 		}
@@ -60,7 +64,9 @@ void addChild(ASTNode *dest, ASTNode *novo){
  
 		novo->id = entry;
 
-		(*(ASTNode*)novo).print = print_Idntf;
+		(*(ASTNode*)novo).print = XML_print_Idntf;
+		(*(ASTNode*)novo).interpret = Intpr_Idntf;
+		//(*(ASTNode*)novo).print = XML_noprint;
 		(*(ASTNode*)novo).del = del_Idntf;
 		return novo;
 	}
@@ -75,7 +81,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		novo->valorInteiro = atoi(entry->nome);
 		novo->valorFloat = atof(entry->nome);
 
-		(*(ASTNode*)novo).print = print_Numero;
+		(*(ASTNode*)novo).print = XML_print_Numero;
+		(*(ASTNode*)novo).interpret = Intpr_Numero;
 		(*(ASTNode*)novo).del = del_Numero;
 		return novo;
 	}
@@ -96,7 +103,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		addChild((ASTNode*)novo, (ASTNode*)e1);
 		addChild((ASTNode*)novo, (ASTNode*)e2);
 
-		(*(ASTNode*)novo).print = print_LogicalOp;
+		(*(ASTNode*)novo).print = XML_print_LogicalOp;
+		(*(ASTNode*)novo).interpret = Intpr_LogicalOp;
 		(*(ASTNode*)novo).del = del_LogicalOp;
 		return novo;
 	}
@@ -117,7 +125,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		addChild((ASTNode*)novo, (ASTNode*)e1);
 		addChild((ASTNode*)novo, (ASTNode*)e2);
 
-		(*(ASTNode*)novo).print = print_RelOp;
+		(*(ASTNode*)novo).print = XML_print_RelOp;
+		(*(ASTNode*)novo).interpret = Intpr_RelOp;
 		(*(ASTNode*)novo).del = del_RelOp;
 		return novo;
 	}
@@ -138,7 +147,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		addChild((ASTNode*)novo, (ASTNode*)e1);
 		addChild((ASTNode*)novo, (ASTNode*)e2);
 
-		(*(ASTNode*)novo).print = print_ArithOp;
+		(*(ASTNode*)novo).print = XML_print_ArithOp;
+		(*(ASTNode*)novo).interpret = Intpr_ArithOp;
 		(*(ASTNode*)novo).del = del_ArithOp;
 		return novo;
 	}
@@ -155,7 +165,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		addChild((ASTNode*)novo, (ASTNode*)id);
 		addChild((ASTNode*)novo, (ASTNode*)e);
 
-		novo->super.print = print_Attr;
+		novo->super.print = XML_print_Attr;
+		novo->super.interpret = Intpr_Attr;
 		novo->super.del = del_Attr;
 		return novo;
 	}
@@ -175,7 +186,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 			novo->ifFalse= *ifFalse;
 			addChild((ASTNode*)novo, (ASTNode*)ifFalse);
 		}
-		novo->super.print = print_If;
+		novo->super.print = XML_print_If;
+		novo->super.interpret = Intpr_If;
 		novo->super.del = del_If;
 		return novo;
 	}
@@ -192,7 +204,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		addChild((ASTNode*)novo, (ASTNode*)condicao);
 		addChild((ASTNode*)novo, (ASTNode*)ifTrue);
 
-		novo->super.print = print_While;
+		novo->super.print = XML_print_While;
+		novo->super.interpret = Intpr_While;
 		novo->super.del = del_While;
 		return novo;
 	}
@@ -213,7 +226,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		addChild((ASTNode*)novo, (ASTNode*)incr);
 		addChild((ASTNode*)novo, (ASTNode*)ifTrue);
 
-		novo->super.print = print_For;
+		novo->super.print = XML_print_For;
+		novo->super.interpret = Intpr_For;
 		novo->super.del = del_For;
 		return novo;
 	}
@@ -228,7 +242,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		addChild((ASTNode*)novo, (ASTNode*)id);
 
-		novo->super.print = print_Read;
+		novo->super.print = XML_print_Read;
+		novo->super.interpret = Intpr_Read;
 		novo->super.del = del_Read;
 		return novo;
 	}
@@ -243,7 +258,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		addChild((ASTNode*)novo, (ASTNode*)saida);
 
-		novo->super.print = print_Print;
+		novo->super.print = XML_print_Print;
+		novo->super.interpret = Intpr_Print;
 		novo->super.del = del_Print;
 		return novo;
 	}

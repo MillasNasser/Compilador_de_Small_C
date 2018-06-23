@@ -1,14 +1,15 @@
 #include "AnalisadorSintatico.h"
 
-void AnSint_start(string path){
+ASTNode* AnSint_start(string path){
     AnalisadorLexico *ss = new_AnalisadorLexico(path);
     ss->start(ss);
 
     Gramatica_init();
-    Programa();
+    ASTNode *arvoreSintatica = Programa();
     print_Tabela();
 
     del_AnalisadorLexico(ss);
+    return arvoreSintatica;
 }
 
 /* ####### Construtores e Destrutores #######*/

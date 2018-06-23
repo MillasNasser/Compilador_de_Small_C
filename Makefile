@@ -43,4 +43,4 @@ $(ODIR)/%.o: $(SDIR)/%.c
 md-obj:
 	mkdir -p obj
 clean:
-	rm -rf *.d obj/*
+	rm -rf *.d obj/* *.txt

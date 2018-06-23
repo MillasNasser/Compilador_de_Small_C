@@ -3,24 +3,20 @@
 int main(int argc, char *argv[]){
     strcpy(simbolTable,"symboltable.txt");
     strcpy(arvAbstr ,"abstractTree.txt");
+    logErro = fopen("logErro.txt","w");
+    if(logErro == NULL){
+        perror("Erro ao executar a acao");
+        exit(-2);
+    }
     if(argc > 2){
         strcpy(simbolTable, argv[2]);
     }
     if(argc > 3){
         strcpy(arvAbstr, argv[3]);
     }
+
     AnalisadorSintatico *novo = new_AnalisadorSintatico();
-    novo->start(argv[1]);
+    ASTNode *arvoreSintatica = novo->start(argv[1]);
+    arvoreSintatica->del(arvoreSintatica);
     return 0;
 }
-/* Impressão do vetor de Lexemas
-    int i;
-	for(i = 0; i < tknVec->qnt; i++){ 
-        No *saida = tknVec->get(tknVec,i); 
-        printf("%s %s\n", ((Token*)saida->valor)->lexema, ((Token*)saida->valor)->nome); 
-        printf("%5lu| %13s| %s\n", ((Token*)saida->valor)->linha, 
-                 ((Token*)saida->valor)->lexema,  
-                 ((Token*)saida->valor)->nome); 
-		printf("-----+--------------+---------------\n"); 
-    }
-*/

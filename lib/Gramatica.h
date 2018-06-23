@@ -12,7 +12,7 @@
     bool match(string );
 
     /* Funções da Gramática*/
-    bool Programa ();
+    ASTNode* Programa ();
     void Decl_Comando ();
     void Declaracao ();
     void Decl2 ();

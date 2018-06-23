@@ -22,7 +22,7 @@ void define_linhas_dos_tokens(buffer leitura){
 		if(leitura[i] == '\n'){
 			numeroLinha++;
 		}else if(leitura[i] != ' ' && leitura[i] != '\t' && leitura[i] != '\n'){
-			printf("Erro lexico na linha %d: " 
+			fprintf(logErro, "Erro lexico na linha %d: " 
 					"caractere %c invalido!\n", numeroLinha, leitura[i]);
 			ocorreuErro = 1;
 		}

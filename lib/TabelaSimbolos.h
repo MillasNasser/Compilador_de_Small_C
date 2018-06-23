@@ -7,7 +7,7 @@
 		unsigned long int linha;
 		string lexema;
 		string tipo;
-		void *valor;
+		float valor;
 	}EntradaTabela;
 
 	Map *TabelaDeSimbolos;
@@ -17,7 +17,7 @@
 	EntradaTabela* new_EntradaTabela(	unsigned long int linha,
 							string lexema,
 							string tipo,
-							void *valor);
+							float valor);
 
 	int add_Tabela(EntradaTabela*);
 

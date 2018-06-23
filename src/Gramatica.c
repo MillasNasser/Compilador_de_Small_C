@@ -1,6 +1,6 @@
 #include "Gramatica.h"
 
-#define errSynt(TKN) {printf("Erro: esperado %s, lexema encontrado %s\
+#define errSynt(TKN) {fprintf(logErro, "Erro esperado %s, lexema encontrado %s\
 				\nLinha: %lu\n", TKN, getInLex(),\
 				((Token*)tknVec->get(tknVec,index_entrada)->valor)->linha);\
 				exit(-1);}
@@ -28,14 +28,13 @@ bool add_TabelaDeSimbolos(ASTNode *arv,string tipo){
 		tokenEntrada->linha,
 		tokenEntrada->nome,
 		tipo,
-		NULL
+		NAN
 	));
 
-	/*Idntf *id = new_Idntf(
-		(Token*)tknVec->get(tknVec,index_entrada)->valor
-	);
+	Idntf *id = new_Idntf(tokenEntrada);
+	((ASTNode*)id)->print = XML_noprint;
+	addChild(arv, (ASTNode*)id);
 
-	addChild(arv, (ASTNode*)id);*/
 	index_entrada++;
 
 	return adicionou;
@@ -48,7 +47,7 @@ void Gramatica_init(){
 }
 
 /* Inicio das definições da gramatica*/
-bool Programa (){
+ASTNode* Programa (){
 	if(!match(INT)) errSynt(INT);
 	if(!match(MAIN)) errSynt(MAIN);
 	if(!match(LBRACKET)) errSynt(LBRACKET);
@@ -60,8 +59,7 @@ bool Programa (){
 	FILE *arq = fopen(arvAbstr,"w");
 	arv->print(arq, arv);
 	fclose(arq);
-	arv->del(arv);
-	return true;
+	return arv;
 }
 
 void Decl_Comando (ASTNode *arv){
@@ -174,6 +172,14 @@ ASTNode* Atribuicao (){
 	if(!match(ATTR)) errSynt(ATTR);
 	Expr *expr = Expressao();
 	if(!match(PCOMMA)) errSynt(PCOMMA);
+
+	if( ((Expr*)id)->type == tINT && 
+		((Expr*)expr)->type == tFLOAT &&
+		id->id != NULL
+	){
+		fprintf(logErro, "Erro identificador %s é do tipo int, mas a atribuicao e float.\nLinha: %lu\n", 
+			id->id->lexema, id->id->linha);
+	}
 
 	Attr *atrib = new_Attr(id,expr);
 	return (ASTNode*)atrib;
@@ -420,6 +426,5 @@ Expr* Fator (){
 		return expr;
 	}
 
-	printf("%s\n", getInLex());
 	errSynt(fst_toMtrx(FIRST_Fator)[0]);
 }

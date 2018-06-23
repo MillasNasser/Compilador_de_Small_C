@@ -5,7 +5,7 @@
     #include "Gramatica.h"
 
     typedef struct s_AnalsdrSint{
-        void (*start)(string path);
+        ASTNode* (*start)(string path);
     } AnalisadorSintatico;
 
 	AnalisadorSintatico* new_AnalisadorSintatico();
