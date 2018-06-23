@@ -7,4 +7,5 @@ int main()
       if (i > 0)
          i = 43;
   }
+  print(i);
 }

@@ -183,7 +183,11 @@ float Intpr_Attr(FILE *arq, ASTNode *self){
 	Attr *this = (Attr*) self;
 
 	/* Recebendo o id e expressão para a atribuição */
-	Idntf *id = (Idntf*) &(this->id);
+	Idntf *id = (Idntf*)((ASTNode*)this)
+		->filhos->get(
+			((ASTNode*)this)->filhos,
+			0
+		)->valor;
 	Expr *expr = (Expr*)((ASTNode*)this)
 		->filhos->get(
 			((ASTNode*)this)->filhos,
@@ -304,7 +308,11 @@ float Intpr_For(FILE *arq, ASTNode *self){
 
 float Intpr_Read(FILE *arq, ASTNode *self){
 	Read *this = (Read*) self;
-	Idntf *id = (Idntf*) &(this->id);
+	Idntf *id = (Idntf*)((ASTNode*)this)
+		->filhos->get(
+			((ASTNode*)this)->filhos,
+			0
+		)->valor;
 
 	if(strcmp(id->super.super.nome, "Idntf_NULL") == 0){
 		fprintf(arq, "Erro Interpretador: Identificador nao declarado\n");
@@ -337,7 +345,7 @@ float Intpr_Print(FILE *arq, ASTNode *self){
 	if(expr->type == tINT){
 		fprintf(arq, "%d\n", (int) valor);
 	}else{
-		fprintf(arq, "%.30g\n", valor);
+		fprintf(arq, "%f\n", valor);
 	}
 
 	return NAN;
