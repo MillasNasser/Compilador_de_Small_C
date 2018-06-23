@@ -2,7 +2,7 @@
 
 /* Funções do interpretador */
 void Intrp_start(FILE *arq, ASTNode *arvSint){
-	
+	arvSint->interpret(arq, arvSint);
 }
 
 float Intpr_ASTNode(FILE *arq, ASTNode *self){
@@ -239,7 +239,7 @@ float Intpr_Print(FILE *arq, ASTNode *self){
 	Print *this = (Print*) self;
 
 	/* Pegando a expressão da condição */
-	Expr *expr = (Expr*) &(this->saida);
+	Expr *expr = (Expr*) self->filhos->get(self->filhos, 0)->valor;
 
 	/* Recebendo o valor da expressão */
 	float valor = ((ASTNode*)expr)->interpret(arq,

@@ -17,6 +17,8 @@ int main(int argc, char *argv[]){
 
     AnalisadorSintatico *novo = new_AnalisadorSintatico();
     ASTNode *arvoreSintatica = novo->start(argv[1]);
+    Interpretador *interpretador = new_Interpretador();
+    interpretador->start(stdout, arvoreSintatica);
     arvoreSintatica->del(arvoreSintatica);
     return 0;
 }
