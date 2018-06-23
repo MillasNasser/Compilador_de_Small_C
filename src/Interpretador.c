@@ -204,11 +204,11 @@ float Intpr_If(FILE *arq, ASTNode *self){
 	If *this = (If*) self;
 
 	/* Pegando a expressão da condição */
-		Expr *expr = (Expr*)((ASTNode*)this)
-					->filhos->get(
-						((ASTNode*)this)->filhos,
-						0
-					)->valor;
+	Expr *expr = (Expr*)((ASTNode*)this)
+		->filhos->get(
+			((ASTNode*)this)->filhos,
+			0
+		)->valor;
 
 	/* Recebendo o valor da expressão */
 	float valor = ((ASTNode*)expr)->interpret(arq,
@@ -242,7 +242,11 @@ float Intpr_While(FILE *arq, ASTNode *self){
 	While *this = (While*) self;
 
 	/* Pegando a expressão da condição */
-	Expr *expr = (Expr*) &(this->condicao);
+	Expr *expr = (Expr*)((ASTNode*)this)
+		->filhos->get(
+			((ASTNode*)this)->filhos,
+			0
+		)->valor;
 
 	/* Recebendo o valor da expressão */
 	float valor = ((ASTNode*)expr)->interpret(arq,
@@ -258,6 +262,9 @@ float Intpr_While(FILE *arq, ASTNode *self){
 
 	while(valor != 0){
 		Intpr_ASTBloco(arq, &(this->ifTrue));
+		valor = ((ASTNode*)expr)->interpret(arq,
+			((ASTNode*)expr
+		));
 	}
 
 	return NAN;
