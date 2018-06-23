@@ -28,6 +28,10 @@ float Intpr_Expr(FILE *arq, ASTNode *self){
 
 float Intpr_Idntf(FILE *arq, ASTNode *self){
 	Idntf *this = (Idntf*) self;
+	if(strcmp(self->nome, "Idntf_NULL") == 0){
+		fprintf(arq, "Erro Interpretador: Identificador nao declarado\n");
+		exit(4);
+	}
 	return this->id->valor;
 }
 
@@ -59,7 +63,7 @@ float Intpr_LogicalOp(FILE *arq, ASTNode *self){
 
 	/* Caso um dos operandos não for inicializado */
 	if(v1 == NAN || v2 == NAN){
-		fprintf(arq, "Erro: um dos operandos não é um " \
+		fprintf(arq, "Erro Interpretador: um dos operandos não é um " \
 					 "número, ou não foi inicializado\n");
 		exit(1);
 	}
@@ -73,7 +77,7 @@ float Intpr_LogicalOp(FILE *arq, ASTNode *self){
 
 	/*TODO: Alterar o stdout da saida */
 	/* Erro causados por essa função */
-	fprintf(stdout, "Erro: operação não existente: %s\n", this->super.op);
+	fprintf(stdout, "Erro Interpretador: operação não existente: %s\n", this->super.op);
 	exit(1);
 }
 
@@ -100,7 +104,7 @@ float Intpr_RelOp(FILE *arq, ASTNode *self){
 
 	/* Caso um dos operandos não for inicializado */
 	if(v1 == NAN || v2 == NAN){
-		fprintf(arq, "Erro: um dos operandos não é um " \
+		fprintf(arq, "Erro Interpretador: um dos operandos não é um " \
 					 "número, ou não foi inicializado\n");
 		exit(1);
 	}
@@ -122,7 +126,7 @@ float Intpr_RelOp(FILE *arq, ASTNode *self){
 
 	/*TODO: Alterar o stdout da saida */
 	/* Erro causados por essa função */
-	fprintf(stdout, "Erro: operação não existente: %s\n", this->super.op);
+	fprintf(stdout, "Erro Interpretador: operação não existente: %s\n", this->super.op);
 	exit(1);
 }
 
@@ -149,7 +153,7 @@ float Intpr_ArithOp(FILE *arq, ASTNode *self){
 
 	/* Caso um dos operandos não for inicializado */
 	if(v1 == NAN || v2 == NAN){
-		fprintf(arq, "Erro: um dos operandos não é um " \
+		fprintf(arq, "Erro Interpretador: um dos operandos não é um " \
 					 "número, ou não foi inicializado\n");
 		exit(1);
 	}
@@ -163,7 +167,7 @@ float Intpr_ArithOp(FILE *arq, ASTNode *self){
 		return v1 * v2;
 	}else if(strcmp("/",this->super.op) == 0){
 		if(v2 == 0){
-			fprintf(stdout, "Erro: divisao por 0\n");
+			fprintf(stdout, "Erro Interpretador: divisao por 0\n");
 			exit(3);
 		}
 		return v1 / v2;
@@ -171,7 +175,7 @@ float Intpr_ArithOp(FILE *arq, ASTNode *self){
 
 	/*TODO: Alterar o stdout da saida */
 	/* Erro causados por essa função */
-	fprintf(stdout, "Erro: operação não existente: %s\n", this->super.op);
+	fprintf(stdout, "Erro Interpretador: operação não existente: %s\n", this->super.op);
 	exit(1);
 }
 
@@ -180,7 +184,16 @@ float Intpr_Attr(FILE *arq, ASTNode *self){
 
 	/* Recebendo o id e expressão para a atribuição */
 	Idntf *id = (Idntf*) &(this->id);
-	Expr *expr = (Expr*) &(this->expr);
+	Expr *expr = (Expr*)((ASTNode*)this)
+		->filhos->get(
+			((ASTNode*)this)->filhos,
+			1
+		)->valor;
+
+	if(strcmp(id->super.super.nome, "Idntf_NULL") == 0){
+		fprintf(arq, "Erro Interpretador: Identificador nao declarado\n");
+		exit(4);
+	}
 
 	/* Recebendo o valor da expressão */
 	float valor = ((ASTNode*)expr)->interpret(arq,
@@ -189,7 +202,7 @@ float Intpr_Attr(FILE *arq, ASTNode *self){
 
 	/* Se não for uma expressão válida */
 	if(valor == NAN){
-		fprintf(arq, "Erro: um dos operandos não é um " \
+		fprintf(arq, "Erro Interpretador: um dos operandos não é um " \
 					 "número, ou não foi inicializado\n");
 		exit(1);
 	}
@@ -217,7 +230,7 @@ float Intpr_If(FILE *arq, ASTNode *self){
 
 	/* Se não for uma expressão válida */
 	if(valor == NAN){
-		fprintf(arq, "Erro: um dos operandos não é um " \
+		fprintf(arq, "Erro Interpretador: um dos operandos não é um " \
 					 "número, ou não foi inicializado\n");
 		exit(1);
 	}
@@ -255,29 +268,49 @@ float Intpr_While(FILE *arq, ASTNode *self){
 
 	/* Se não for uma expressão válida */
 	if(valor == NAN){
-		fprintf(arq, "Erro: um dos operandos não é um " \
+		fprintf(arq, "Erro Interpretador: um dos operandos não é um " \
 					 "número, ou não foi inicializado\n");
 		exit(1);
 	}
 
 	while(valor != 0){
-		Intpr_ASTBloco(arq, &(this->ifTrue));
-		valor = ((ASTNode*)expr)->interpret(arq,
-			((ASTNode*)expr
-		));
+		this->ifTrue.interpret(arq, &(this->ifTrue));
+		valor = expr->super.interpret(arq,((ASTNode*)expr));
 	}
 
 	return NAN;
 }
 
 float Intpr_For(FILE *arq, ASTNode *self){
-	//For *this = (For*) self;
+	For *this = (For*) self;
+	
+	Expr *expr = (Expr*)((ASTNode*)this)
+	->filhos->get(
+		((ASTNode*)this)->filhos,
+		1
+	)->valor;
+	
+	((ASTNode*)&this->init)->interpret(arq, ((ASTNode*)&this->init));
+	float valor = expr->super.interpret(arq,(ASTNode*)expr);
+	while(valor != 0){
+		this->ifTrue.interpret(arq, &(this->ifTrue));
+
+		((ASTNode*)&this->incrmnt)->interpret(arq, ((ASTNode*)&this->incrmnt));
+		valor = expr->super.interpret(arq,(ASTNode*)expr);
+	}
+
 	return NAN;
 }
 
 float Intpr_Read(FILE *arq, ASTNode *self){
 	Read *this = (Read*) self;
 	Idntf *id = (Idntf*) &(this->id);
+
+	if(strcmp(id->super.super.nome, "Idntf_NULL") == 0){
+		fprintf(arq, "Erro Interpretador: Identificador nao declarado\n");
+		exit(4);
+	}
+
 	scanf("%f", &(id->id->valor));
 	return NAN;
 }
@@ -295,7 +328,7 @@ float Intpr_Print(FILE *arq, ASTNode *self){
 
 	/* Se não for uma expressão válida */
 	if(valor == NAN){
-		fprintf(arq, "Erro: um dos operandos não é um " \
+		fprintf(arq, "Erro Interpretador: um dos operandos não é um " \
 					 "número, ou não foi inicializado\n");
 		exit(1);
 	}

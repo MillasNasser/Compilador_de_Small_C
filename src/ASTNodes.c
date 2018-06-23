@@ -66,7 +66,6 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		(*(ASTNode*)novo).print = XML_print_Idntf;
 		(*(ASTNode*)novo).interpret = Intpr_Idntf;
-		//(*(ASTNode*)novo).print = XML_noprint;
 		(*(ASTNode*)novo).del = del_Idntf;
 		return novo;
 	}
