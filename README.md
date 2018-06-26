@@ -16,3 +16,9 @@ obs: Não é necessário passar esses atributos, se for renomear
     para renomear a árvore é necessário passar o nome da tabela
     e também antes do nome da árvore. Não é possível renomear
     apenas a árvore.
+    
+A arquivos que são gerados e que não podem ter seu nome alterado, 
+tal como, o .txt e o cod3Addr.txt. O logErro.txt indica quais 
+foram os erros no código-fonte disponibilizado. Já o cod3Addr.txt 
+fornece o código de 3 endereços correspondente ao código-fonte
+disponibilizado.

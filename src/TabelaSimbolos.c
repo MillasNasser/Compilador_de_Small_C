@@ -49,3 +49,21 @@ void print_Tabela(){
 	fprintf(arq,"---------------------------------\n");
 	fclose(arq);
 }
+
+void print_Tabela_shell(){
+	int i;
+	FILE *arq = stdout;
+	fprintf(arq,"-------Symbol Table------------\n");
+	for(i = 0; i < cont; i++){
+		EntradaTabela *aux = (EntradaTabela*)TabelaDeSimbolos->get(TabelaDeSimbolos,lexemas[i]);
+		
+		fprintf(arq,"%d:  token: ID, lexema: %s, tipo: %s, valor: %g, line number: %lu\n",
+					i,
+					aux->lexema,
+					aux->tipo,
+					((aux->valor == NAN)?0:aux->valor),
+					aux->linha);
+	}
+	fprintf(arq,"---------------------------------\n");
+	fclose(arq);
+}

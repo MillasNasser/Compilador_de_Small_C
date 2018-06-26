@@ -3,6 +3,7 @@
 /* Funções do interpretador */
 void Intrp_start(FILE *arq, ASTNode *arvSint){
 	arvSint->interpret(arq, arvSint);
+	print_Tabela_shell();
 }
 
 float Intpr_ASTNode(FILE *arq, ASTNode *self){
@@ -170,6 +171,11 @@ float Intpr_Attr(FILE *arq, ASTNode *self){
 	/* Realizando a atribuição do valor em id (Tabela de símbolos) */
 	id->id->valor = valor;
 
+	EntradaTabela *entry = 
+			(EntradaTabela*)TabelaDeSimbolos
+			->get(TabelaDeSimbolos,id->id->lexema);
+
+	entry->valor = valor;
 	return NAN;
 }
 

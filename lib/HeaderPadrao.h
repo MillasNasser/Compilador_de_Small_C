@@ -22,6 +22,7 @@
 
     //Arquivos padrões
     FILE *logErro;
+    FILE *cod3Addr;
 
     ///Inclusão da biblioteca de funções e estruturas úteis
     #include "utils.h"

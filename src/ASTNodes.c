@@ -13,6 +13,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		
 		novo->print = XML_print_ASTNode;
 		novo->interpret = Intpr_ASTNode;
+		novo->gen3Addr = Gen_ASTNode;
 		novo->del = del_ASTNode;
 		return novo;
 	}
@@ -23,6 +24,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		novo->print = XML_print_ASTBloco;
 		novo->interpret = Intpr_ASTBloco;
+		novo->gen3Addr = Gen_ASTBloco;
 		novo->del = del_ASTBloco;
 		return novo;
 	}
@@ -36,6 +38,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		
 		novo->super.print = XML_print_Expr;
 		novo->super.interpret = Intpr_Expr;
+		novo->super.gen3Addr = Gen_Expr;
 		novo->super.del = del_Expr;
 		return novo;
 	}
@@ -55,6 +58,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 			strcpy(((ASTNode*)novo)->nome,"Idntf_NULL");
 			((ASTNode*)novo)->print = XML_print_Idntf;
 			((ASTNode*)novo)->interpret = Intpr_Idntf;
+			((ASTNode*)novo)->gen3Addr = Gen_Idntf;
 			((ASTNode*)novo)->del = del_Idntf;
 			return novo;
 		}
@@ -66,6 +70,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		(*(ASTNode*)novo).print = XML_print_Idntf;
 		(*(ASTNode*)novo).interpret = Intpr_Idntf;
+		(*(ASTNode*)novo).gen3Addr = Gen_Idntf;
 		(*(ASTNode*)novo).del = del_Idntf;
 		return novo;
 	}
@@ -82,6 +87,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		(*(ASTNode*)novo).print = XML_print_Numero;
 		(*(ASTNode*)novo).interpret = Intpr_Numero;
+		(*(ASTNode*)novo).gen3Addr = Gen_Numero;
 		(*(ASTNode*)novo).del = del_Numero;
 		return novo;
 	}
@@ -104,6 +110,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		(*(ASTNode*)novo).print = XML_print_LogicalOp;
 		(*(ASTNode*)novo).interpret = Intpr_LogicalOp;
+		(*(ASTNode*)novo).gen3Addr = Gen_LogicalOp;
 		(*(ASTNode*)novo).del = del_LogicalOp;
 		return novo;
 	}
@@ -126,6 +133,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		(*(ASTNode*)novo).print = XML_print_RelOp;
 		(*(ASTNode*)novo).interpret = Intpr_RelOp;
+		(*(ASTNode*)novo).gen3Addr = Gen_RelOp;
 		(*(ASTNode*)novo).del = del_RelOp;
 		return novo;
 	}
@@ -148,6 +156,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		(*(ASTNode*)novo).print = XML_print_ArithOp;
 		(*(ASTNode*)novo).interpret = Intpr_ArithOp;
+		(*(ASTNode*)novo).gen3Addr = Gen_ArithOp;
 		(*(ASTNode*)novo).del = del_ArithOp;
 		return novo;
 	}
@@ -166,6 +175,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		novo->super.print = XML_print_Attr;
 		novo->super.interpret = Intpr_Attr;
+		novo->super.gen3Addr = Gen_Attr;
 		novo->super.del = del_Attr;
 		return novo;
 	}
@@ -187,6 +197,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		}
 		novo->super.print = XML_print_If;
 		novo->super.interpret = Intpr_If;
+		novo->super.gen3Addr = Gen_If;
 		novo->super.del = del_If;
 		return novo;
 	}
@@ -205,6 +216,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		novo->super.print = XML_print_While;
 		novo->super.interpret = Intpr_While;
+		novo->super.gen3Addr = Gen_While;
 		novo->super.del = del_While;
 		return novo;
 	}
@@ -227,6 +239,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		novo->super.print = XML_print_For;
 		novo->super.interpret = Intpr_For;
+		novo->super.gen3Addr = Gen_For;
 		novo->super.del = del_For;
 		return novo;
 	}
@@ -243,6 +256,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		novo->super.print = XML_print_Read;
 		novo->super.interpret = Intpr_Read;
+		novo->super.gen3Addr = Gen_Read;
 		novo->super.del = del_Read;
 		return novo;
 	}
@@ -259,6 +273,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 
 		novo->super.print = XML_print_Print;
 		novo->super.interpret = Intpr_Print;
+		novo->super.gen3Addr = Gen_Print;
 		novo->super.del = del_Print;
 		return novo;
 	}

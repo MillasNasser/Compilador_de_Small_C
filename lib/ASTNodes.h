@@ -16,6 +16,7 @@
 		Lista *filhos; //Filhos que o nó possui
 		void (*print)(FILE *arq, struct s_ASTNode *self);
 		float (*interpret)(FILE *arq, struct s_ASTNode*self);
+		string (*gen3Addr)(FILE *arq, struct s_ASTNode*self);
 		int (*del)(void*);
 	}ASTNode;
 
@@ -154,5 +155,6 @@
 	int del_Print(void* self);
 
 #include "ASTnodesPrint.h"
+#include "TresEnderecos.h"
 #include "Interpretador.h"
 #endif //__ASTNodes_H_
