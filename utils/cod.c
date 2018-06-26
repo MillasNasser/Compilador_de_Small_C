@@ -1,13 +1,20 @@
 int main(){
-	float x, y = 4;
-	x = 5.0;
+	int mult = 1, fat;
+	read fat;
+	int backup = fat;
 
-	while(x >= 0 && x != 1){
-		print(x);
-		x = x-1;
+	while(backup > 0){
+		print(backup);
+		backup = backup - 1;
 	}
-	print(2222222);
-	for(x = 5; x >= 0; x = x-1){
-		print(x);
+
+	if(fat > 10){
+		fat = 10;
 	}
+
+	int i;
+	for(i = 1; i <= fat; i = i+1){
+		mult = mult * i;
+	}
+	print(mult);
 }

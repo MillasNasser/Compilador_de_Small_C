@@ -17,12 +17,10 @@ float Intpr_ASTNode(FILE *arq, ASTNode *self){
 }
 
 float Intpr_ASTBloco(FILE *arq, ASTNode *self){
-	//ASTBloco *this = (ASTBloco*) self;
 	return Intpr_ASTNode(arq, self);
 }
 
 float Intpr_Expr(FILE *arq, ASTNode *self){
-	//Expr *this = (Expr*) self;
 	return Intpr_ASTNode(arq, self);
 }
 
@@ -43,23 +41,12 @@ float Intpr_Numero(FILE *arq, ASTNode *self){
 float Intpr_LogicalOp(FILE *arq, ASTNode *self){
 	LogicalOp *this = (LogicalOp*) self;
 
-	/* Recebendo os operandos da operação */
-	Expr *expr1 = (Expr*)((ASTNode*)this)
-					->filhos->get(
-						((ASTNode*)this)->filhos,
-						0
-					)->valor;
+	/* Recebendo os valores dos operandos da operação */
+	float v1 = ((ASTNode*)this->e1)
+				->interpret(arq, (ASTNode*)this->e1);
 
-	Expr *expr2 = (Expr*)((ASTNode*)this)
-					->filhos->get(
-						((ASTNode*)this)->filhos,
-						1
-					)->valor;
-					
-	float v1 = ((ASTNode*)expr1)
-				->interpret(arq, (ASTNode*)expr1);
-	float v2 = ((ASTNode*)expr2)
-				->interpret(arq, (ASTNode*)expr2);
+	float v2 = ((ASTNode*)this->e2)
+				->interpret(arq, (ASTNode*)this->e2);
 
 	/* Caso um dos operandos não for inicializado */
 	if(v1 == NAN || v2 == NAN){
@@ -84,23 +71,12 @@ float Intpr_LogicalOp(FILE *arq, ASTNode *self){
 float Intpr_RelOp(FILE *arq, ASTNode *self){
 	RelOp *this = (RelOp*) self;
 
-	/* Recebendo os operandos da operação */
-	Expr *expr1 = (Expr*)((ASTNode*)this)
-					->filhos->get(
-						((ASTNode*)this)->filhos,
-						0
-					)->valor;
+	/* Recebendo os valores dos operandos da operação */
+	float v1 = ((ASTNode*)this->e1)
+				->interpret(arq, (ASTNode*)this->e1);
 
-	Expr *expr2 = (Expr*)((ASTNode*)this)
-					->filhos->get(
-						((ASTNode*)this)->filhos,
-						1
-					)->valor;
-					
-	float v1 = ((ASTNode*)expr1)
-				->interpret(arq, (ASTNode*)expr1);
-	float v2 = ((ASTNode*)expr2)
-				->interpret(arq, (ASTNode*)expr2);
+	float v2 = ((ASTNode*)this->e2)
+				->interpret(arq, (ASTNode*)this->e2);
 
 	/* Caso um dos operandos não for inicializado */
 	if(v1 == NAN || v2 == NAN){
@@ -133,23 +109,12 @@ float Intpr_RelOp(FILE *arq, ASTNode *self){
 float Intpr_ArithOp(FILE *arq, ASTNode *self){
 	ArithOp *this = (ArithOp*) self;
 
-	/* Recebendo os operandos da operação */
-	Expr *expr1 = (Expr*)((ASTNode*)this)
-					->filhos->get(
-						((ASTNode*)this)->filhos,
-						0
-					)->valor;
+	/* Recebendo os valores dos operandos da operação */
+	float v1 = ((ASTNode*)this->e1)
+				->interpret(arq, (ASTNode*)this->e1);
 
-	Expr *expr2 = (Expr*)((ASTNode*)this)
-					->filhos->get(
-						((ASTNode*)this)->filhos,
-						1
-					)->valor;
-					
-	float v1 = ((ASTNode*)expr1)
-				->interpret(arq, (ASTNode*)expr1);
-	float v2 = ((ASTNode*)expr2)
-				->interpret(arq, (ASTNode*)expr2);
+	float v2 = ((ASTNode*)this->e2)
+				->interpret(arq, (ASTNode*)this->e2);
 
 	/* Caso um dos operandos não for inicializado */
 	if(v1 == NAN || v2 == NAN){
@@ -183,16 +148,7 @@ float Intpr_Attr(FILE *arq, ASTNode *self){
 	Attr *this = (Attr*) self;
 
 	/* Recebendo o id e expressão para a atribuição */
-	Idntf *id = (Idntf*)((ASTNode*)this)
-		->filhos->get(
-			((ASTNode*)this)->filhos,
-			0
-		)->valor;
-	Expr *expr = (Expr*)((ASTNode*)this)
-		->filhos->get(
-			((ASTNode*)this)->filhos,
-			1
-		)->valor;
+	Idntf *id = this->id;
 
 	if(strcmp(id->super.super.nome, "Idntf_NULL") == 0){
 		fprintf(arq, "Erro Interpretador: Identificador nao declarado\n");
@@ -200,8 +156,8 @@ float Intpr_Attr(FILE *arq, ASTNode *self){
 	}
 
 	/* Recebendo o valor da expressão */
-	float valor = ((ASTNode*)expr)->interpret(arq,
-		((ASTNode*)expr
+	float valor = ((ASTNode*)this->expr)->interpret(arq,
+		((ASTNode*)this->expr
 	));
 
 	/* Se não for uma expressão válida */
@@ -220,16 +176,9 @@ float Intpr_Attr(FILE *arq, ASTNode *self){
 float Intpr_If(FILE *arq, ASTNode *self){
 	If *this = (If*) self;
 
-	/* Pegando a expressão da condição */
-	Expr *expr = (Expr*)((ASTNode*)this)
-		->filhos->get(
-			((ASTNode*)this)->filhos,
-			0
-		)->valor;
-
 	/* Recebendo o valor da expressão */
-	float valor = ((ASTNode*)expr)->interpret(arq,
-		((ASTNode*)expr
+	float valor = ((ASTNode*)this->condicao)->interpret(arq,
+		((ASTNode*)this->condicao
 	));
 
 	/* Se não for uma expressão válida */
@@ -241,13 +190,13 @@ float Intpr_If(FILE *arq, ASTNode *self){
 
 	/* Bloco executado quando verdadeiro */
 	if(valor != 0){
-		this->ifTrue.interpret(arq, &(this->ifTrue));
+		this->ifTrue->interpret(arq, this->ifTrue);
 	}
 	/* Bloco executado quando falso */
 	else{
 		/* Se houver um else para ser executado */
 		if(((ASTNode*)this)->filhos->qnt > 2){
-			this->ifTrue.interpret(arq, &(this->ifFalse));
+			this->ifTrue->interpret(arq, this->ifFalse);
 		}
 	}
 
@@ -258,16 +207,9 @@ float Intpr_If(FILE *arq, ASTNode *self){
 float Intpr_While(FILE *arq, ASTNode *self){
 	While *this = (While*) self;
 
-	/* Pegando a expressão da condição */
-	Expr *expr = (Expr*)((ASTNode*)this)
-		->filhos->get(
-			((ASTNode*)this)->filhos,
-			0
-		)->valor;
-
 	/* Recebendo o valor da expressão */
-	float valor = ((ASTNode*)expr)->interpret(arq,
-		((ASTNode*)expr
+	float valor = ((ASTNode*)this->condicao)->interpret(arq,
+		((ASTNode*)this->condicao
 	));
 
 	/* Se não for uma expressão válida */
@@ -278,8 +220,9 @@ float Intpr_While(FILE *arq, ASTNode *self){
 	}
 
 	while(valor != 0){
-		this->ifTrue.interpret(arq, &(this->ifTrue));
-		valor = expr->super.interpret(arq,((ASTNode*)expr));
+		this->ifTrue->interpret(arq, this->ifTrue);
+		valor = this->condicao->super
+				.interpret(arq,((ASTNode*)this->condicao));
 	}
 
 	return NAN;
@@ -288,19 +231,13 @@ float Intpr_While(FILE *arq, ASTNode *self){
 float Intpr_For(FILE *arq, ASTNode *self){
 	For *this = (For*) self;
 	
-	Expr *expr = (Expr*)((ASTNode*)this)
-	->filhos->get(
-		((ASTNode*)this)->filhos,
-		1
-	)->valor;
-	
-	((ASTNode*)&this->init)->interpret(arq, ((ASTNode*)&this->init));
-	float valor = expr->super.interpret(arq,(ASTNode*)expr);
+	((ASTNode*)this->init)->interpret(arq, ((ASTNode*)this->init));
+	float valor = this->condicao->super.interpret(arq,(ASTNode*)this->condicao);
 	while(valor != 0){
-		this->ifTrue.interpret(arq, &(this->ifTrue));
+		this->ifTrue->interpret(arq, this->ifTrue);
 
-		((ASTNode*)&this->incrmnt)->interpret(arq, ((ASTNode*)&this->incrmnt));
-		valor = expr->super.interpret(arq,(ASTNode*)expr);
+		((ASTNode*)this->incrmnt)->interpret(arq, ((ASTNode*)this->incrmnt));
+		valor = this->condicao->super.interpret(arq,(ASTNode*)this->condicao);
 	}
 
 	return NAN;
@@ -308,11 +245,7 @@ float Intpr_For(FILE *arq, ASTNode *self){
 
 float Intpr_Read(FILE *arq, ASTNode *self){
 	Read *this = (Read*) self;
-	Idntf *id = (Idntf*)((ASTNode*)this)
-		->filhos->get(
-			((ASTNode*)this)->filhos,
-			0
-		)->valor;
+	Idntf *id = this->id;
 
 	if(strcmp(id->super.super.nome, "Idntf_NULL") == 0){
 		fprintf(arq, "Erro Interpretador: Identificador nao declarado\n");
@@ -324,14 +257,11 @@ float Intpr_Read(FILE *arq, ASTNode *self){
 }
 
 float Intpr_Print(FILE *arq, ASTNode *self){
-	//Print *this = (Print*) self;
-
-	/* Pegando a expressão da condição */
-	Expr *expr = (Expr*) self->filhos->get(self->filhos, 0)->valor;
+	Print *this = (Print*) self;
 
 	/* Recebendo o valor da expressão */
-	float valor = ((ASTNode*)expr)->interpret(arq,
-		((ASTNode*)expr
+	float valor = ((ASTNode*)this->saida)->interpret(arq,
+		((ASTNode*)this->saida
 	));
 
 	/* Se não for uma expressão válida */
@@ -342,7 +272,7 @@ float Intpr_Print(FILE *arq, ASTNode *self){
 	}
 
 	/* Exibindo o valor conforme o tipo da variável*/
-	if(expr->type == tINT){
+	if(this->saida->type == tINT){
 		fprintf(arq, "%d\n", (int) valor);
 	}else{
 		fprintf(arq, "%f\n", valor);

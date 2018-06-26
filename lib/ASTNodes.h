@@ -44,65 +44,65 @@
 	/* Operador Lógico */
 	typedef struct s_LogicalOp{
 		Expr super;
-		Expr e1;
-		Expr e2;
+		Expr *e1;
+		Expr *e2;
 	}LogicalOp;
 
 	/* Operador Relacional */
 	typedef struct s_RelOp{
 		Expr super;
-		Expr e1;
-		Expr e2;
+		Expr *e1;
+		Expr *e2;
 	}RelOp;
 
 	/* Operador Aritimético */
 	typedef struct s_ArithOp{
 		Expr super;
-		Expr e1;
-		Expr e2;
+		Expr *e1;
+		Expr *e2;
 	}ArithOp;
 
 	/* Nó de atribuição */
 	typedef struct s_Attr{
 		ASTNode super;
-		Idntf id;
-		Expr expr;
+		Idntf *id;
+		Expr *expr;
 	}Attr;
 
 	/* Nó condicional if */
 	typedef struct s_If{
 		ASTNode super;
-		Expr condicao;
-		ASTNode ifTrue;
-		ASTNode ifFalse;
+		Expr *condicao;
+		ASTNode *ifTrue;
+		ASTNode *ifFalse;
 	}If;
 
 	/* Nó laço While */
 	typedef struct s_While{
 		ASTNode super;
-		Expr condicao;
-		ASTNode ifTrue;
+		Expr *condicao;
+		ASTNode *ifTrue;
 	}While;
 
 	/* Nó laço For */
 	typedef struct s_For{
 		ASTNode super;
-		Attr init;
-		Expr condicao;
-		Attr incrmnt;
-		ASTNode ifTrue;
+		Attr *init;
+		Expr *condicao;
+		Attr *incrmnt;
+		ASTNode *ifTrue;
 	}For;
 
 	/* Nó de input Read */
 	typedef struct s_Read{
 		ASTNode super;
-		Idntf id;
+		Idntf *id;
 	}Read;
 
 	/* Nó de output Print */
 	typedef struct s_Print{
 		ASTNode super;
-		Expr saida;
+		Expr *saida;
 	}Print;
 
 /* Funções */

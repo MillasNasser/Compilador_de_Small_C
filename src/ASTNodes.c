@@ -52,10 +52,10 @@ void addChild(ASTNode *dest, ASTNode *novo){
 			fprintf(logErro, "Erro Variavel '%s' nao declarada. Linha %lu\n", 
 				tkn->nome, tkn->linha);
 			
-			strcpy((*(ASTNode*)novo).nome,"Idntf_NULL");
-			(*(ASTNode*)novo).print = XML_print_Idntf;
-			(*(ASTNode*)novo).interpret = Intpr_Idntf;
-			(*(ASTNode*)novo).del = del_Idntf;
+			strcpy(((ASTNode*)novo)->nome,"Idntf_NULL");
+			((ASTNode*)novo)->print = XML_print_Idntf;
+			((ASTNode*)novo)->interpret = Intpr_Idntf;
+			((ASTNode*)novo)->del = del_Idntf;
 			return novo;
 		}
 
@@ -96,8 +96,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		novo->super.type = e1->type || e2->type;
 		/* TODO: calculate result of LogicalOp */
 		
-		novo->e1 = *e1;
-		novo->e2 = *e2;
+		novo->e1 = e1;
+		novo->e2 = e2;
 
 		addChild((ASTNode*)novo, (ASTNode*)e1);
 		addChild((ASTNode*)novo, (ASTNode*)e2);
@@ -118,8 +118,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		novo->super.type = e1->type || e2->type;
 		/* TODO: calculate result of RelOp */
 		
-		novo->e1 = *e1;
-		novo->e2 = *e2;
+		novo->e1 = e1;
+		novo->e2 = e2;
 
 		addChild((ASTNode*)novo, (ASTNode*)e1);
 		addChild((ASTNode*)novo, (ASTNode*)e2);
@@ -140,8 +140,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		novo->super.type = e1->type || e2->type;
 		/* TODO: calculate result of ArithOp */
 		
-		novo->e1 = *e1;
-		novo->e2 = *e2;
+		novo->e1 = e1;
+		novo->e2 = e2;
 
 		addChild((ASTNode*)novo, (ASTNode*)e1);
 		addChild((ASTNode*)novo, (ASTNode*)e2);
@@ -158,8 +158,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		build(novo, super);
 		free(super);
 
-		novo->id = *id;
-		novo->expr = *e;
+		novo->id = id;
+		novo->expr = e;
 
 		addChild((ASTNode*)novo, (ASTNode*)id);
 		addChild((ASTNode*)novo, (ASTNode*)e);
@@ -176,13 +176,13 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		build(novo, super);
 		free(super);
 
-		novo->condicao = *cond;
-		novo->ifTrue = *ifTrue;
+		novo->condicao = cond;
+		novo->ifTrue = ifTrue;
 
 		addChild((ASTNode*)novo, (ASTNode*)cond);
 		addChild((ASTNode*)novo, (ASTNode*)ifTrue);
 		if(ifFalse != NULL){
-			novo->ifFalse= *ifFalse;
+			novo->ifFalse = ifFalse;
 			addChild((ASTNode*)novo, (ASTNode*)ifFalse);
 		}
 		novo->super.print = XML_print_If;
@@ -197,8 +197,8 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		build(novo, super);
 		free(super);
 
-		novo->condicao = *condicao;
-		novo->ifTrue = *ifTrue;
+		novo->condicao = condicao;
+		novo->ifTrue = ifTrue;
 
 		addChild((ASTNode*)novo, (ASTNode*)condicao);
 		addChild((ASTNode*)novo, (ASTNode*)ifTrue);
@@ -215,10 +215,10 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		build(novo, super);
 		free(super);
 
-		novo->init = *init;
-		novo->condicao = *cond;
-		novo->incrmnt = *incr;
-		novo->ifTrue = *ifTrue;
+		novo->init = init;
+		novo->condicao = cond;
+		novo->incrmnt = incr;
+		novo->ifTrue = ifTrue;
 
 		addChild((ASTNode*)novo, (ASTNode*)init);
 		addChild((ASTNode*)novo, (ASTNode*)cond);
@@ -237,7 +237,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		build(novo, super);
 		free(super);
 
-		novo->id = *id;
+		novo->id = id;
 
 		addChild((ASTNode*)novo, (ASTNode*)id);
 
@@ -253,7 +253,7 @@ void addChild(ASTNode *dest, ASTNode *novo){
 		build(novo, super);
 		free(super);
 
-		novo->saida = *saida;
+		novo->saida = saida;
 
 		addChild((ASTNode*)novo, (ASTNode*)saida);
 
